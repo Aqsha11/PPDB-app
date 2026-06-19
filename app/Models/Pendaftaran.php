@@ -12,7 +12,6 @@ class Pendaftaran extends Model
 {
     use HasFactory;
 
-{
     const DRAFT = 'draft';
     const SUBMITTED = 'submitted';
     const VERIFIKASI = 'verifikasi';
