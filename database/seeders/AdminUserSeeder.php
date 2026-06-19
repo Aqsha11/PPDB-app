@@ -14,27 +14,27 @@ class AdminUserSeeder extends Seeder
             [
                 'name' => 'Super Admin',
                 'email' => 'superadmin@ppdb.test',
-                'role' => 'Super Admin',
+                'roles' => ['Super Admin', 'Admin'],
             ],
             [
                 'name' => 'Admin PPDB',
                 'email' => 'admin@ppdb.test',
-                'role' => 'Admin',
+                'roles' => ['Admin'],
             ],
             [
                 'name' => 'Operator',
                 'email' => 'operator@ppdb.test',
-                'role' => 'Operator',
+                'roles' => ['Operator'],
             ],
             [
                 'name' => 'Verifikator',
                 'email' => 'verifikator@ppdb.test',
-                'role' => 'Verifikator',
+                'roles' => ['Verifikator'],
             ],
             [
                 'name' => 'Siswa Test',
                 'email' => 'siswa@ppdb.test',
-                'role' => 'Siswa',
+                'roles' => ['Siswa'],
             ],
         ];
 
@@ -46,7 +46,7 @@ class AdminUserSeeder extends Seeder
                 'is_active' => true,
                 'email_verified_at' => now(),
             ]);
-            $user->assignRole($data['role']);
+            $user->assignRole($data['roles']);
         }
 
         $this->command->info('Admin and test users created successfully.');
