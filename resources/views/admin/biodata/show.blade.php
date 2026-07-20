@@ -1,147 +1,130 @@
 <x-app-layout>
-    <x-slot name="header">Detail Biodata Siswa</x-slot>
+    <x-slot name="header">Detail Biodata Peserta</x-slot>
 
-    <div class="mb-6 space-y-4">
+    <div class="space-y-6">
         <x-breadcrumb :items="[
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Biodata Siswa', 'url' => route('admin.biodata.index')],
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Biodata Peserta', 'url' => route('admin.biodata.index')],
             ['label' => 'Detail'],
         ]" />
 
         <div class="flex items-center gap-2">
-            <a href="{{ route('admin.biodata.edit', $siswa->id) }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
-                Edit
-            </a>
-            <a href="{{ route('admin.biodata.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">
-                &larr; Kembali
-            </a>
+            <x-icon-button :href="route('admin.biodata.index')" variant="default" title="Kembali">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </x-icon-button>
+            <x-icon-button :href="route('admin.biodata.edit', $peserta)" variant="warning" title="Ubah">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </x-icon-button>
         </div>
-    </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <x-card title="Data Pribadi">
-            <dl class="divide-y divide-gray-100">
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">NISN</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->nisn ?? '-' }}</dd>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <x-card>
+                <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700">
+                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Data Pribadi</h3>
                 </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Nama</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 font-semibold">{{ $siswa->user->name ?? $siswa->nama_lengkap }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Email</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->user->email ?? '-' }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">No HP</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->no_hp ?? '-' }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Tempat Lahir</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->tempat_lahir ?? '-' }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Tanggal Lahir</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->tanggal_lahir ? $siswa->tanggal_lahir->format('d/m/Y') : '-' }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Jenis Kelamin</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->jenis_kelamin == 'L' ? 'Laki-laki' : ($siswa->jenis_kelamin == 'P' ? 'Perempuan' : '-') }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Agama</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->agama ?? '-' }}</dd>
-                </div>
-                <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                    <dt class="text-sm font-medium text-gray-500">Alamat</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->alamat ?? '-' }}</dd>
-                </div>
-            </dl>
-        </x-card>
-
-        <div class="space-y-6">
-            @if($siswa->orangTua)
-                <x-card title="Data Orang Tua">
-                    <dl class="divide-y divide-gray-100">
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Nama Ayah</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->nama_ayah ?? '-' }}</dd>
-                        </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Pekerjaan Ayah</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->pekerjaan_ayah ?? '-' }}</dd>
-                        </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Nama Ibu</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->nama_ibu ?? '-' }}</dd>
-                        </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Pekerjaan Ibu</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->pekerjaan_ibu ?? '-' }}</dd>
-                        </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">No HP</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->no_hp ?? '-' }}</dd>
-                        </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Alamat</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->orangTua->alamat ?? '-' }}</dd>
-                        </div>
+                <div class="p-5">
+                    <dl class="space-y-4">
+                        @php
+                            $fields = [
+                                ['NISN', $peserta->nisn],
+                                ['Nama', $peserta->user->name ?? $peserta->nama_lengkap],
+                                ['Email', $peserta->user->email],
+                                ['No HP', $peserta->no_hp],
+                                ['Tempat Lahir', $peserta->tempat_lahir],
+                                ['Tanggal Lahir', $peserta->tanggal_lahir ? $peserta->tanggal_lahir->format('d/m/Y') : null],
+                                ['Jenis Kelamin', $peserta->jenis_kelamin == 'L' ? 'Laki-laki' : ($peserta->jenis_kelamin == 'P' ? 'Perempuan' : null)],
+                                ['Agama', $peserta->agama],
+                                ['Alamat', $peserta->alamat],
+                            ];
+                        @endphp
+                        @foreach($fields as [$label, $value])
+                            <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">{{ $label }}</dt>
+                                <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $value ?? '-' }}</dd>
+                            </div>
+                        @endforeach
                     </dl>
-                </x-card>
-            @endif
+                </div>
+            </x-card>
 
-            @if($siswa->sekolahAsal)
-                <x-card title="Data Sekolah Asal">
-                    <dl class="divide-y divide-gray-100">
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Nama Sekolah</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->sekolahAsal->nama_sekolah ?? '-' }}</dd>
+            <div class="space-y-6">
+                @if($peserta->orangTua)
+                    <x-card>
+                        <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Data Orang Tua</h3>
                         </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Alamat</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->sekolahAsal->alamat ?? '-' }}</dd>
+                        <div class="p-5">
+                            <dl class="space-y-4">
+                                @foreach([
+                                    ['Nama Ayah', $peserta->orangTua->nama_ayah],
+                                    ['Pekerjaan Ayah', $peserta->orangTua->pekerjaan_ayah],
+                                    ['Nama Ibu', $peserta->orangTua->nama_ibu],
+                                    ['Pekerjaan Ibu', $peserta->orangTua->pekerjaan_ibu],
+                                    ['No HP', $peserta->orangTua->no_hp],
+                                    ['Alamat', $peserta->orangTua->alamat],
+                                ] as [$label, $value])
+                                    <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">{{ $label }}</dt>
+                                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $value ?? '-' }}</dd>
+                                    </div>
+                                @endforeach
+                            </dl>
                         </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Tahun Lulus</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->sekolahAsal->tahun_lulus ?? '-' }}</dd>
-                        </div>
-                    </dl>
-                </x-card>
-            @endif
+                    </x-card>
+                @endif
 
-            @if($siswa->pendaftaran)
-                <x-card title="Data Pendaftaran">
-                    <dl class="divide-y divide-gray-100">
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Nomor Pendaftaran</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->pendaftaran->nomor_pendaftaran ?? '-' }}</dd>
+                @if($peserta->sekolahAsal)
+                    <x-card>
+                        <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Data Sekolah Asal</h3>
                         </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Jalur</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900">{{ $siswa->pendaftaran->jalurPendaftaran->nama ?? '-' }}</dd>
+                        <div class="p-5">
+                            <dl class="space-y-4">
+                                @foreach([
+                                    ['Nama Sekolah', $peserta->sekolahAsal->nama_sekolah],
+                                    ['Alamat', $peserta->sekolahAsal->alamat],
+                                    ['Tahun Lulus', $peserta->sekolahAsal->tahun_lulus],
+                                ] as [$label, $value])
+                                    <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                        <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">{{ $label }}</dt>
+                                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $value ?? '-' }}</dd>
+                                    </div>
+                                @endforeach
+                            </dl>
                         </div>
-                        <div class="py-3 sm:grid sm:grid-cols-3 sm:gap-4">
-                            <dt class="text-sm font-medium text-gray-500">Status</dt>
-                            <dd class="mt-1 sm:mt-0 sm:col-span-2">
-                                @php
-                                    $statusColors = [
-                                        'draft' => 'gray',
-                                        'submitted' => 'yellow',
-                                        'verifikasi' => 'blue',
-                                        'diterima' => 'green',
-                                        'cadangan' => 'yellow',
-                                        'ditolak' => 'red',
-                                    ];
-                                    $color = $statusColors[$siswa->pendaftaran->status_pendaftaran] ?? 'gray';
-                                @endphp
-                                <x-badge :color="$color">{{ ucfirst($siswa->pendaftaran->status_pendaftaran) }}</x-badge>
-                            </dd>
+                    </x-card>
+                @endif
+
+                @if($peserta->pendaftaran)
+                    <x-card>
+                        <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-700">
+                            <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Data Pendaftaran</h3>
                         </div>
-                    </dl>
-                </x-card>
-            @endif
+                        <div class="p-5">
+                            <dl class="space-y-4">
+                                <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Nomor Pendaftaran</dt>
+                                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $peserta->pendaftaran->nomor_pendaftaran ?? '-' }}</dd>
+                                </div>
+                                <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Jalur</dt>
+                                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $peserta->pendaftaran->jalurPendaftaran->nama ?? '-' }}</dd>
+                                </div>
+                                <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Status</dt>
+                                    <dd class="mt-1 sm:mt-0 sm:col-span-2">
+                                        @php
+                                            $statusColors = ['draft'=>'gray','submitted'=>'yellow','verifikasi'=>'blue','diterima'=>'green','cadangan'=>'yellow','ditolak'=>'red'];
+                                            $color = $statusColors[$peserta->pendaftaran->status_pendaftaran] ?? 'gray';
+                                        @endphp
+                                        <x-badge :color="$color">{{ ucfirst($peserta->pendaftaran->status_pendaftaran) }}</x-badge>
+                                    </dd>
+                                </div>
+                            </dl>
+                        </div>
+                    </x-card>
+                @endif
+            </div>
         </div>
     </div>
 </x-app-layout>

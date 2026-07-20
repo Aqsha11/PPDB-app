@@ -5,32 +5,41 @@
         <x-breadcrumb :items="[
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
             ['label' => 'Roles', 'url' => route('admin.role.index')],
-            ['label' => 'Detail']
+            ['label' => 'Detail'],
         ]" />
 
+        <div class="flex items-center justify-between">
+            <x-icon-button :href="route('admin.role.index')" variant="default" title="Kembali">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </x-icon-button>
+            <x-icon-button :href="route('admin.role.edit', $role)" variant="warning" title="Ubah">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </x-icon-button>
+        </div>
+
         <x-card>
-            <div class="space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="p-5 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Role</label>
-                        <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200 capitalize">{{ $role->name }}</p>
+                        <x-input-label value="Nama Role" />
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600 capitalize">{{ $role->name }}</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Guard Name</label>
-                        <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $role->guard_name }}</p>
+                        <x-input-label value="Guard Name" />
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600">{{ $role->guard_name }}</p>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Permissions ({{ $role->permissions->count() }})</label>
+                    <x-input-label value="Permissions ({{ $role->permissions->count() }})" />
                     @php
                         $groupedPerms = $role->permissions->groupBy(fn($p) => explode('.', $p->name)[0]);
                     @endphp
                     @if($groupedPerms->count() > 0)
-                        <div class="space-y-4">
+                        <div class="mt-2 space-y-4">
                             @foreach($groupedPerms as $group => $perms)
                                 <div>
-                                    <h4 class="text-sm font-semibold text-gray-900 capitalize mb-2">{{ str_replace('-', ' ', $group) }}</h4>
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-white capitalize mb-2">{{ str_replace('-', ' ', $group) }}</h4>
                                     <div class="flex flex-wrap gap-1.5">
                                         @foreach($perms as $perm)
                                             <x-badge color="blue">{{ $perm->name }}</x-badge>
@@ -40,13 +49,8 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-sm text-gray-400">Tidak ada permission</p>
+                        <p class="mt-2 text-sm text-gray-400 dark:text-slate-500">Tidak ada permission</p>
                     @endif
-                </div>
-
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <a href="{{ route('admin.role.edit', $role->id) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Edit Role</a>
-                    <a href="{{ route('admin.role.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Kembali</a>
                 </div>
             </div>
         </x-card>

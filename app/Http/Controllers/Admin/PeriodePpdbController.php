@@ -40,8 +40,6 @@ class PeriodePpdbController extends Controller
 
 
 
-
-
     public function create()
     {
 
@@ -53,8 +51,6 @@ class PeriodePpdbController extends Controller
             'admin.periode.create'
         );
     }
-
-
 
 
 
@@ -104,9 +100,26 @@ class PeriodePpdbController extends Controller
 
 
 
+    public function show(PeriodePpdb $periode)
+    {
 
 
-    public function edit(PeriodePpdb $periode_ppdb)
+        $this->authorize('periode.view');
+
+
+        $data = $periode;
+
+
+        return view(
+            'admin.periode.show',
+            compact('data')
+        );
+    }
+
+
+
+
+    public function edit(PeriodePpdb $periode)
     {
 
         $this->authorize('periode.edit');
@@ -115,7 +128,7 @@ class PeriodePpdbController extends Controller
         return view(
             'admin.periode.edit',
             [
-                'data' => $periode_ppdb
+                'data' => $periode
             ]
         );
     }
@@ -124,8 +137,7 @@ class PeriodePpdbController extends Controller
 
 
 
-
-    public function update(Request $request, PeriodePpdb $periode_ppdb)
+    public function update(Request $request, PeriodePpdb $periode)
     {
 
 
@@ -133,43 +145,47 @@ class PeriodePpdbController extends Controller
 
 
 
-        $periode_ppdb->update(
-            $request->validate([
+        $data = $request->validate([
+            'tahun_ajaran_id' => 'required',
+            'nama' => 'required',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date',
+        ]);
 
+        $data['tahun_ajaran_id'] = $request->tahun_ajaran_id;
+        $data['status_aktif'] = $request->status_aktif ?? false;
 
-                'nama' => 'required',
-
-                'tanggal_mulai' => 'required',
-
-                'tanggal_selesai' => 'required'
-
-
-            ])
-        );
-
-
+        $periode->update($data);
 
         return redirect()
-            ->route('admin.periode.index');
+            ->route('admin.periode.index')
+            ->with('success', 'Periode berhasil diperbarui.');
     }
 
 
 
 
 
+    public function toggleStatus(PeriodePpdb $periode)
+    {
+        $this->authorize('periode.edit');
 
+        $periode->update(['status_aktif' => !$periode->status_aktif]);
 
-    public function destroy(PeriodePpdb $periode_ppdb)
+        return back()->with('success', 'Status periode berhasil diperbarui.');
+    }
+
+    public function destroy(PeriodePpdb $periode)
     {
 
 
         $this->authorize('periode.delete');
 
 
-        $periode_ppdb->delete();
+        $periode->delete();
 
 
 
-        return back();
+        return back()->with('success', 'Periode berhasil dihapus.');
     }
 }

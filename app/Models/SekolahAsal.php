@@ -10,15 +10,15 @@ class SekolahAsal extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'siswa_id',
+        'peserta_id',
         'nama_sekolah',
         'npsn',
         'alamat',
         'tahun_lulus',
     ];
 
-    public function siswa(): BelongsTo
+    public function peserta(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Peserta::class);
     }
 }

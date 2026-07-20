@@ -21,7 +21,7 @@ class Pendaftaran extends Model
 
     protected $fillable = [
         'user_id',
-        'siswa_id',
+        'peserta_id',
         'tahun_ajaran_id',
         'periode_ppdb_id',
         'jalur_pendaftaran_id',
@@ -39,9 +39,9 @@ class Pendaftaran extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function siswa(): BelongsTo
+    public function peserta(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Peserta::class);
     }
 
     public function tahunAjaran(): BelongsTo

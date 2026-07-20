@@ -25,13 +25,22 @@ require __DIR__.'/auth.php';
 
 // Authenticated user routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', function () {
+        $user = request()->user();
+        if ($user->hasRole('Peserta')) {
+            return redirect()->route('peserta.dashboard');
+        }
+        if ($user->hasRole('Super Admin') || $user->hasRole('Admin') || $user->hasRole('Operator') || $user->hasRole('Verifikator')) {
+            return redirect()->route('admin.dashboard');
+        }
+        return view('dashboard');
+    })->name('dashboard');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Admin & Siswa panels
+// Admin & Peserta panels
 require __DIR__.'/admin.php';
-require __DIR__.'/siswa.php';
+require __DIR__.'/peserta.php';

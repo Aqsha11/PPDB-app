@@ -116,6 +116,13 @@ class PermissionSeeder extends Seeder
             'laporan.view',
             'laporan.export',
 
+
+            // Peserta (Biodata)
+
+            'peserta.view',
+            'peserta.edit',
+            'peserta.delete',
+
         ];
 
 

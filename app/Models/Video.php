@@ -13,7 +13,12 @@ class Video extends Model
         'judul',
         'youtube_url',
         'thumbnail',
+        'status',
 
+    ];
+
+    protected $casts = [
+        'status' => 'boolean',
     ];
 
 

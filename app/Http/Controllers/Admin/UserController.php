@@ -13,8 +13,10 @@ class UserController extends Controller
     public function index()
     {
         $this->authorize('user.view');
-        $data = User::with('roles')->latest()->paginate(20);
-        return view('admin.user.index', compact('data'));
+        $adminRoles = ['Super Admin', 'Admin', 'Operator', 'Verifikator'];
+        $admin = User::with('roles')->whereHas('roles', fn($q) => $q->whereIn('name', $adminRoles))->latest()->paginate(20);
+        $peserta = User::with('roles')->whereHas('roles', fn($q) => $q->where('name', 'Peserta'))->latest()->paginate(20);
+        return view('admin.user.index', compact('admin', 'peserta'));
     }
 
     public function create()
@@ -31,7 +33,8 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8',
-            'role' => 'required|exists:roles,name',
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,name',
         ]);
 
         $user = User::create([
@@ -39,7 +42,7 @@ class UserController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
-        $user->assignRole($data['role']);
+        $user->syncRoles($request->roles);
 
         return redirect()->route('admin.user.index')->with('success', 'User berhasil dibuat.');
     }
@@ -47,7 +50,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         $this->authorize('user.view');
-        $user->load('roles', 'siswa');
+        $user->load('roles', 'peserta');
         return view('admin.user.show', compact('user'));
     }
 
@@ -73,8 +76,9 @@ class UserController extends Controller
 
         $user->update($data);
 
-        if ($request->role) {
-            $user->syncRoles([$request->role]);
+        if ($request->roles) {
+            $request->validate(['roles.*' => 'exists:roles,name']);
+            $user->syncRoles($request->roles);
         }
 
         return redirect()->route('admin.user.index')->with('success', 'User berhasil diupdate.');

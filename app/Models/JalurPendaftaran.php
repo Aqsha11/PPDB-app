@@ -33,4 +33,19 @@ class JalurPendaftaran extends Model
     {
         return $query->where('status', true);
     }
+
+    public function getNamaJalurAttribute()
+    {
+        return $this->nama;
+    }
+
+    public function getIsAktifAttribute()
+    {
+        return $this->status;
+    }
+
+    public function persyaratanDokumen()
+    {
+        return $this->persyaratanDokumens();
+    }
 }

@@ -3,35 +3,35 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Siswa;
+use App\Models\Peserta;
 use Illuminate\Http\Request;
 
 class BiodataController extends Controller
 {
     public function index()
     {
-        $this->authorize('siswa.view');
-        $data = Siswa::with('user')->latest()->paginate(20);
+        $this->authorize('peserta.view');
+        $data = Peserta::with('user')->latest()->paginate(20);
         return view('admin.biodata.index', compact('data'));
     }
 
-    public function show(Siswa $siswa)
+    public function show(Peserta $peserta)
     {
-        $this->authorize('siswa.view');
-        $siswa->load(['user', 'orangTua', 'sekolahAsal', 'pendaftaran.jalurPendaftaran']);
-        return view('admin.biodata.show', compact('siswa'));
+        $this->authorize('peserta.view');
+        $peserta->load(['user', 'orangTua', 'sekolahAsal', 'pendaftaran.jalurPendaftaran']);
+        return view('admin.biodata.show', compact('peserta'));
     }
 
-    public function edit(Siswa $siswa)
+    public function edit(Peserta $peserta)
     {
-        $this->authorize('siswa.edit');
-        return view('admin.biodata.edit', compact('siswa'));
+        $this->authorize('peserta.edit');
+        return view('admin.biodata.edit', compact('peserta'));
     }
 
-    public function update(Request $request, Siswa $siswa)
+    public function update(Request $request, Peserta $peserta)
     {
-        $this->authorize('siswa.edit');
-        $siswa->update($request->validate([
+        $this->authorize('peserta.edit');
+        $peserta->update($request->validate([
             'nisn' => 'nullable|size:10',
             'nik' => 'nullable|size:16',
             'nama_lengkap' => 'required',
@@ -39,15 +39,16 @@ class BiodataController extends Controller
             'tanggal_lahir' => 'nullable|date',
             'jenis_kelamin' => 'nullable|in:L,P',
             'agama' => 'nullable',
+            'no_hp' => 'nullable',
             'alamat' => 'nullable',
         ]));
         return back()->with('success', 'Biodata berhasil diupdate.');
     }
 
-    public function destroy(Siswa $siswa)
+    public function destroy(Peserta $peserta)
     {
-        $this->authorize('siswa.delete');
-        $siswa->delete();
-        return back()->with('success', 'Data siswa berhasil dihapus.');
+        $this->authorize('peserta.delete');
+        $peserta->delete();
+        return back()->with('success', 'Data peserta berhasil dihapus.');
     }
 }

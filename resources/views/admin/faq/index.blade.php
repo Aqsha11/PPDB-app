@@ -1,84 +1,61 @@
 <x-app-layout>
     <x-slot name="header">FAQ</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, editing: null, form: { pertanyaan: '', jawaban: '', urutan: '', status: 1 } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'FAQ']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'FAQ'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola pertanyaan yang sering diajukan</p>
-            <x-primary-button @click="open = true; editing = null; form = { pertanyaan: '', jawaban: '', urutan: '', status: 1 }">
-                + Tambah FAQ
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="FAQ (Tanya Jawab)" description="Kelola pertanyaan yang sering diajukan calon peserta dan orang tua. Tambah, edit, atau nonaktifkan jawaban.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.faq.create') }}">
+                    + Tambah FAQ
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Pertanyaan', 'Jawaban', 'Urutan', 'Status', 'Aksi']">
+            <x-table :headers="['No', 'Pertanyaan', 'Urutan', 'Status Aktif', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 font-medium text-gray-900 max-w-xs">{{ $item->pertanyaan }}</td>
-                        <td class="px-4 py-3 text-gray-500 max-w-sm truncate">{{ Str::limit($item->jawaban, 80) }}</td>
-                        <td class="px-4 py-3 text-gray-600">{{ $item->urutan ?? '-' }}</td>
-                        <td class="px-4 py-3">
-                            @if($item->status)
-                                <x-badge color="green">Aktif</x-badge>
-                            @else
-                                <x-badge color="red">Nonaktif</x-badge>
-                            @endif
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5 text-sm font-medium text-gray-900 dark:text-white max-w-xs truncate">{{ Str::limit($item->pertanyaan, 80) }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400">{{ $item->urutan ?? '-' }}</td>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.faq.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Aktif' : 'Nonaktif' }}
+                                </button>
+                            </form>
                         </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <x-secondary-button @click="open = true; editing = {{ $item->id }}; form = { pertanyaan: '{{ $item->pertanyaan }}', jawaban: `{{ $item->jawaban }}`, urutan: '{{ $item->urutan }}', status: {{ $item->status ? 1 : 0 }} }">
-                                    Edit
-                                </x-secondary-button>
-                                <form action="{{ route('admin.faq.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus FAQ ini?')">
-                                    @csrf @method('DELETE')
-                                    <x-danger-button type="submit">Hapus</x-danger-button>
-                                </form>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-1">
+                                <x-icon-button :href="route('admin.faq.edit', $item->id)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.faq.destroy', $item->id)" variant="danger" title="Hapus" :delete="true" />
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8">
-                            <x-empty-state title="Belum ada FAQ" description="Tambahkan pertanyaan yang sering diajukan" />
+                        <td colspan="5" class="px-5 py-12">
+                            <x-empty-state title="Belum ada FAQ" description="Tambahkan pertanyaan yang sering diajukan">
+                                <x-slot name="action">
+                                    <x-primary-button href="{{ route('admin.faq.create') }}">+ Tambah FAQ</x-primary-button>
+                                </x-slot>
+                            </x-empty-state>
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="faq-modal" :show="open" maxWidth="2xl">
-            <form @submit.prevent="fetch(editing ? '{{ route('admin.faq.update', '') }}/' + editing : '{{ route('admin.faq.store') }}', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ _token: '{{ csrf_token() }}', _method: editing ? 'PUT' : 'POST', pertanyaan: form.pertanyaan, jawaban: form.jawaban, urutan: form.urutan, status: form.status })
-            }).then(r => { if(r.ok) window.location.reload() })" class="p-6 space-y-4">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                @if(editing) <input type="hidden" name="_method" value="PUT"> @endif
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Pertanyaan</label>
-                    <input type="text" name="pertanyaan" x-model="form.pertanyaan" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Jawaban</label>
-                    <textarea name="jawaban" x-model="form.jawaban" rows="4" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Urutan</label>
-                        <input type="number" name="urutan" x-model="form.urutan" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    <div class="flex items-center gap-2 pt-7">
-                        <input type="checkbox" name="status" value="1" x-model="form.status" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label class="text-sm font-medium text-gray-700">Aktif</label>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

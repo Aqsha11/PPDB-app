@@ -1,63 +1,61 @@
 <x-app-layout>
     <x-slot name="header">Pengumuman</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, form: { judul: '', isi: '' } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'Pengumuman']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Pengumuman'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola pengumuman</p>
-            <x-primary-button @click="open = true; form = { judul: '', isi: '' }">
-                + Tambah Pengumuman
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Pengumuman" description="Kelola pengumuman resmi sekolah. Buat, edit, atau hapus pengumuman yang ditampilkan di halaman publik.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/>
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.pengumuman.create') }}">
+                    + Tambah Pengumuman
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Judul', 'Isi', 'Tanggal', 'Status', 'Aksi']">
+            <x-table :headers="['No', 'Judul', 'Tanggal', 'Status Aktif', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 font-medium text-gray-900 max-w-xs truncate">{{ $item->judul }}</td>
-                        <td class="px-4 py-3 text-gray-500 max-w-sm truncate">{{ Str::limit($item->isi, 80) }}</td>
-                        <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</td>
-                        <td class="px-4 py-3">
-                            @if($item->status)
-                                <x-badge color="green">Aktif</x-badge>
-                            @else
-                                <x-badge color="red">Nonaktif</x-badge>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3">
-                            <form action="{{ route('admin.pengumuman.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus pengumuman ini?')">
-                                @csrf @method('DELETE')
-                                <x-danger-button type="submit">Hapus</x-danger-button>
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5 text-sm font-medium text-gray-900 dark:text-white max-w-xs truncate">{{ $item->judul }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400 whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</td>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.pengumuman.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Aktif' : 'Nonaktif' }}
+                                </button>
                             </form>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-1">
+                                <x-icon-button :href="route('admin.pengumuman.edit', $item->id)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.pengumuman.destroy', $item->id)" variant="danger" title="Hapus" :delete="true" />
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8">
-                            <x-empty-state title="Belum ada pengumuman" description="Tambahkan pengumuman baru" />
+                        <td colspan="5" class="px-5 py-12">
+                            <x-empty-state title="Belum ada pengumuman" description="Tambahkan pengumuman baru untuk halaman publik">
+                                <x-slot name="action">
+                                    <x-primary-button href="{{ route('admin.pengumuman.create') }}">+ Tambah Pengumuman</x-primary-button>
+                                </x-slot>
+                            </x-empty-state>
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="pengumuman-modal" :show="open" maxWidth="2xl">
-            <form action="{{ route('admin.pengumuman.store') }}" method="POST" class="p-6 space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul</label>
-                    <input type="text" name="judul" x-model="form.judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Isi Pengumuman</label>
-                    <textarea name="isi" x-model="form.isi" rows="6" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

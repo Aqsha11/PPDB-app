@@ -1,79 +1,68 @@
 <x-app-layout>
     <x-slot name="header">Statistik Sekolah</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, form: { judul: '', jumlah: '', icon: '' } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'Statistik']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Statistik'],
+        ]" />
 
-        <p class="text-sm text-gray-600">Kelola angka statistik yang ditampilkan</p>
-
-        @if($data->count() > 0)
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($data as $item)
-                    <div class="relative group bg-white rounded-xl shadow-sm border border-gray-200 p-6 text-center">
-                        <form action="{{ route('admin.statistik.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus?')" class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition">
-                            @csrf @method('DELETE')
-                            <x-danger-button type="submit" class="!p-1 !text-xs">Hapus</x-danger-button>
-                        </form>
-                        @if($item->icon)
-                            <div class="text-5xl mb-3">{{ $item->icon }}</div>
-                        @endif
-                        <div class="text-3xl font-bold text-gray-900">{{ $item->jumlah }}</div>
-                        <div class="text-sm text-gray-600 mt-1">{{ $item->judul }}</div>
-                    </div>
-                @endforeach
-            </div>
-        @endif
-
-        <div class="flex justify-center">
-            <x-primary-button @click="open = true; form = { judul: '', jumlah: '', icon: '' }">
-                + Tambah Statistik
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Statistik Sekolah" description="Kelola angka statistik sekolah yang ditampilkan di halaman depan.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.statistik.create') }}">
+                    + Tambah Statistik
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Ikon', 'Judul', 'Jumlah', 'Aksi']">
+            <x-table :headers="['No', 'Label', 'Nilai', 'Icon', 'Status', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 text-2xl">{{ $item->icon }}</td>
-                        <td class="px-4 py-3 font-medium text-gray-900">{{ $item->judul }}</td>
-                        <td class="px-4 py-3 text-gray-700 font-semibold">{{ $item->jumlah }}</td>
-                        <td class="px-4 py-3">
-                            <form action="{{ route('admin.statistik.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
-                                @csrf @method('DELETE')
-                                <x-danger-button type="submit">Hapus</x-danger-button>
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $loop->iteration }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ $item->judul }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ $item->jumlah }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            {{ $item->icon ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <form action="{{ route('admin.statistik.toggle-status', $item) }}" method="POST" class="inline-flex">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold transition-colors {{ $item->is_aktif ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->is_aktif ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->is_aktif ? 'Aktif' : 'Nonaktif' }}
+                                </button>
                             </form>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end gap-1">
+                                <x-icon-button :href="route('admin.statistik.edit', $item)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </x-icon-button>
+                                <x-icon-button :delete="true" :href="route('admin.statistik.destroy', $item)" title="Hapus" />
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="4" class="px-4 py-8">
-                            <x-empty-state title="Belum ada data statistik" description="Tambahkan statistik sekolah" />
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <x-empty-state title="Belum ada data statistik" description="Tambahkan statistik sekolah baru." />
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="statistik-modal" :show="open" maxWidth="lg">
-            <form action="{{ route('admin.statistik.store') }}" method="POST" class="p-6 space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul</label>
-                    <input type="text" name="judul" x-model="form.judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required placeholder="Guru, Siswa, dll">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Jumlah</label>
-                    <input type="number" name="jumlah" x-model="form.jumlah" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Ikon</label>
-                    <input type="text" name="icon" x-model="form.icon" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Contoh: 👨‍🏫">
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

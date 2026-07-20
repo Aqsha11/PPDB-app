@@ -2,456 +2,413 @@
 
 namespace Database\Seeders;
 
-use App\Models\{
-    TahunAjaran,
-    PeriodePpdb,
-    JalurPendaftaran,
-    PersyaratanDokumen,
-    Siswa,
-    OrangTua,
-    SekolahAsal,
-    Pendaftaran,
-    DokumenPendaftaran,
-    VerifikasiPendaftaran,
-    HasilSeleksi,
-    DaftarUlang,
-    User,
-    ProfilSekolah,
-    SambutanKepalaSekolah,
-    StatistikSekolah,
-    KeunggulanSekolah,
-    TahapanPpdb,
-    JadwalPpdb,
-    Faq,
-    Berita,
-    Pengumuman,
-    HeroBanner,
-    Galeri,
-    Video,
-    Testimoni,
-    Partner,
-    MediaSosial,
-    Kontak,
-    Footer,
-    Seo,
-};
+use App\Models\Berita;
+use App\Models\DaftarUlang;
+use App\Models\DokumenPendaftaran;
+use App\Models\Faq;
+use App\Models\Galeri;
+use App\Models\HasilSeleksi;
+use App\Models\HeroBanner;
+use App\Models\JadwalPpdb;
+use App\Models\JalurPendaftaran;
+use App\Models\KeunggulanSekolah;
+use App\Models\Kontak;
+use App\Models\Pendaftaran;
+use App\Models\Pengumuman;
+use App\Models\PeriodePpdb;
+use App\Models\PersyaratanDokumen;
+use App\Models\Peserta;
+use App\Models\SambutanKepalaSekolah;
+use App\Models\Seo;
+use App\Models\StatistikSekolah;
+use App\Models\TahunAjaran;
+use App\Models\TahapanPpdb;
+use App\Models\Testimoni;
+use App\Models\User;
+use App\Models\VerifikasiPendaftaran;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DummyDataSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->command->info('Seeding master data...');
-        $this->seedMasterData();
+        $password = Hash::make('password');
 
-        $this->command->info('Seeding CMS content...');
-        $this->seedCmsContent();
+        // ─── Admin Accounts ──────────────────────────────────────
+        $superadmin = User::firstOrCreate(['email' => 'superadmin@ppdb.test'], [
+            'name' => 'Super Admin',
+            'password' => $password,
+            'email_verified_at' => now(),
+            'is_active' => true,
+        ]);
+        $superadmin->assignRole('Super Admin');
 
-        $this->command->info('Seeding student registrations...');
-        $this->seedPendaftaran();
+        $admin = User::firstOrCreate(['email' => 'admin@ppdb.test'], [
+            'name' => 'Admin Utama',
+            'password' => $password,
+            'email_verified_at' => now(),
+            'is_active' => true,
+        ]);
+        $admin->assignRole('Admin');
 
-        $this->command->info('All dummy data created successfully!');
-    }
+        $operator = User::firstOrCreate(['email' => 'operator@ppdb.test'], [
+            'name' => 'Operator Sekolah',
+            'password' => $password,
+            'email_verified_at' => now(),
+            'is_active' => true,
+        ]);
+        $operator->assignRole('Operator');
 
-    protected function seedMasterData(): void
-    {
-        $ta2025 = TahunAjaran::create(['nama' => '2025/2026', 'status_aktif' => true]);
-        $ta2024 = TahunAjaran::create(['nama' => '2024/2025', 'status_aktif' => false]);
+        $verifikator = User::firstOrCreate(['email' => 'verifikator@ppdb.test'], [
+            'name' => 'Tim Verifikator',
+            'password' => $password,
+            'email_verified_at' => now(),
+            'is_active' => true,
+        ]);
+        $verifikator->assignRole('Verifikator');
 
-        PeriodePpdb::create([
-            'tahun_ajaran_id' => $ta2025->id,
-            'nama' => 'Gelombang 1',
-            'tanggal_mulai' => '2025-01-01',
-            'tanggal_selesai' => '2025-03-31',
+        // ─── Tahun Ajaran & Periode ──────────────────────────────
+        $ta = TahunAjaran::updateOrCreate(['nama' => '2026/2027'], [
             'status_aktif' => true,
         ]);
-        PeriodePpdb::create([
-            'tahun_ajaran_id' => $ta2025->id,
-            'nama' => 'Gelombang 2',
-            'tanggal_mulai' => '2025-04-01',
-            'tanggal_selesai' => '2025-06-30',
-            'status_aktif' => false,
-        ]);
-        PeriodePpdb::create([
-            'tahun_ajaran_id' => $ta2024->id,
-            'nama' => 'Gelombang 1',
-            'tanggal_mulai' => '2024-01-01',
-            'tanggal_selesai' => '2024-06-30',
-            'status_aktif' => false,
-        ]);
 
-        $zonasi = JalurPendaftaran::create([
-            'nama' => 'Zonasi',
-            'slug' => 'zonasi',
-            'kuota' => 60,
-            'deskripsi' => 'Jalur pendaftaran berdasarkan jarak tempat tinggal dengan sekolah.',
-            'status' => true,
-        ]);
-        $prestasi = JalurPendaftaran::create([
-            'nama' => 'Prestasi',
-            'slug' => 'prestasi',
-            'kuota' => 25,
-            'deskripsi' => 'Jalur pendaftaran bagi siswa dengan prestasi akademik dan non-akademik.',
-            'status' => true,
-        ]);
-        $afirmasi = JalurPendaftaran::create([
-            'nama' => 'Afirmasi',
-            'slug' => 'afirmasi',
-            'kuota' => 10,
-            'deskripsi' => 'Jalur pendaftaran bagi siswa dari keluarga kurang mampu.',
-            'status' => true,
-        ]);
-        $mutasi = JalurPendaftaran::create([
-            'nama' => 'Perpindahan Tugas Orang Tua',
-            'slug' => 'perpindahan-tugas-orang-tua',
-            'kuota' => 5,
-            'deskripsi' => 'Jalur pendaftaran bagi siswa yang orang tuanya pindah tugas.',
-            'status' => true,
-        ]);
+        $periode = PeriodePpdb::updateOrCreate(
+            ['tahun_ajaran_id' => $ta->id, 'nama' => 'Gelombang 1'],
+            [
+                'tanggal_mulai' => '2026-07-01',
+                'tanggal_selesai' => '2026-08-31',
+                'status_aktif' => true,
+            ]
+        );
 
-        $commonDocs = [
-            ['nama' => 'Kartu Keluarga', 'format' => 'pdf,jpg,png', 'max_size' => 2048, 'is_wajib' => true],
-            ['nama' => 'Akta Kelahiran', 'format' => 'pdf,jpg,png', 'max_size' => 2048, 'is_wajib' => true],
-            ['nama' => 'Pas Foto', 'format' => 'jpg,png', 'max_size' => 1024, 'is_wajib' => true],
-        ];
-        $prestasiDocs = [
-            ['nama' => 'Sertifikat Prestasi', 'format' => 'pdf,jpg,png', 'max_size' => 2048, 'is_wajib' => true],
-        ];
-        $afirmasiDocs = [
-            ['nama' => 'Surat Keterangan Tidak Mampu', 'format' => 'pdf', 'max_size' => 2048, 'is_wajib' => true],
-        ];
-        $mutasiDocs = [
-            ['nama' => 'Surat Penugasan Orang Tua', 'format' => 'pdf', 'max_size' => 2048, 'is_wajib' => true],
-        ];
-
-        foreach ($commonDocs as $doc) {
-            foreach ([$zonasi->id, $prestasi->id, $afirmasi->id, $mutasi->id] as $jpId) {
-                PersyaratanDokumen::create(array_merge($doc, [
-                    'jalur_pendaftaran_id' => $jpId,
-                    'slug' => str($doc['nama'])->slug()->append('-' . $jpId),
-                    'status' => true,
-                ]));
-            }
-        }
-        foreach ($prestasiDocs as $doc) {
-            PersyaratanDokumen::create(array_merge($doc, [
-                'jalur_pendaftaran_id' => $prestasi->id,
-                'slug' => str($doc['nama'])->slug(),
+        // ─── Jalur Pendaftaran ──────────────────────────────────
+        $jalurZonasi = JalurPendaftaran::updateOrCreate(
+            ['slug' => 'zonasi'],
+            [
+                'nama' => 'Zonasi',
+                'kuota' => 50,
+                'deskripsi' => 'Pendaftaran berdasarkan zonasi wilayah tempat tinggal',
                 'status' => true,
-            ]));
-        }
-        foreach ($afirmasiDocs as $doc) {
-            PersyaratanDokumen::create(array_merge($doc, [
-                'jalur_pendaftaran_id' => $afirmasi->id,
-                'slug' => str($doc['nama'])->slug(),
-                'status' => true,
-            ]));
-        }
-        foreach ($mutasiDocs as $doc) {
-            PersyaratanDokumen::create(array_merge($doc, [
-                'jalur_pendaftaran_id' => $mutasi->id,
-                'slug' => str($doc['nama'])->slug(),
-                'status' => true,
-            ]));
-        }
-    }
+            ]
+        );
 
-    protected function seedCmsContent(): void
-    {
-        ProfilSekolah::create([
-            'nama_sekolah' => 'SD Negeri Harapan Bangsa',
-            'logo' => null,
-            'visi' => 'Terwujudnya generasi beriman, berilmu, berkarakter, dan berbudaya lingkungan.',
-            'misi' => "1. Menanamkan nilai-nilai keimanan dan ketakwaan\n2. Mengembangkan potensi akademik dan non-akademik\n3. Membentuk karakter disiplin, jujur, dan bertanggung jawab\n4. Menciptakan lingkungan sekolah yang bersih, hijau, dan sehat",
-            'sejarah' => 'SD Negeri Harapan Bangsa berdiri sejak tahun 1985 dan telah melahirkan ribuan lulusan yang berprestasi di berbagai bidang.',
+        $jalurPrestasi = JalurPendaftaran::updateOrCreate(
+            ['slug' => 'prestasi'],
+            [
+                'nama' => 'Prestasi',
+                'kuota' => 20,
+                'deskripsi' => 'Pendaftaran berdasarkan prestasi akademik dan non-akademik',
+                'status' => true,
+            ]
+        );
+
+        // ─── Persyaratan Dokumen ────────────────────────────────
+        $dokumenRequirements = [
+            ['nama' => 'Pas Foto 3x4', 'slug' => 'zonasi-pas-foto', 'format' => 'jpg,jpeg,png', 'max_size' => 2048, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 1],
+            ['nama' => 'Kartu Keluarga', 'slug' => 'zonasi-kk', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 2],
+            ['nama' => 'Akta Kelahiran', 'slug' => 'zonasi-akta', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 3],
+            ['nama' => 'Ijazah / SKL', 'slug' => 'zonasi-ijazah', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 5120, 'is_wajib' => true, 'kategori' => 'Akademik', 'urutan' => 4],
+            ['nama' => 'Rapor', 'slug' => 'zonasi-rapor', 'format' => 'pdf', 'max_size' => 5120, 'is_wajib' => false, 'kategori' => 'Akademik', 'urutan' => 5],
+            ['nama' => 'Sertifikat Prestasi', 'slug' => 'zonasi-sertifikat', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => false, 'kategori' => 'Prestasi', 'urutan' => 6],
+            ['nama' => 'Surat Keterangan Tidak Mampu', 'slug' => 'zonasi-sktm', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => false, 'kategori' => 'Lainnya', 'urutan' => 7],
+        ];
+
+        foreach ($dokumenRequirements as $doc) {
+            PersyaratanDokumen::updateOrCreate(
+                ['slug' => $doc['slug'], 'jalur_pendaftaran_id' => $jalurZonasi->id],
+                array_merge($doc, ['jalur_pendaftaran_id' => $jalurZonasi->id, 'status' => true, 'keterangan' => "Dokumen wajib: {$doc['nama']}"])
+            );
+        }
+
+        $dokumenPrestasi = [
+            ['nama' => 'Pas Foto 3x4', 'slug' => 'prestasi-pas-foto', 'format' => 'jpg,jpeg,png', 'max_size' => 2048, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 1],
+            ['nama' => 'Kartu Keluarga', 'slug' => 'prestasi-kk', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 2],
+            ['nama' => 'Akta Kelahiran', 'slug' => 'prestasi-akta', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => true, 'kategori' => 'Identitas', 'urutan' => 3],
+            ['nama' => 'Ijazah / SKL', 'slug' => 'prestasi-ijazah', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 5120, 'is_wajib' => true, 'kategori' => 'Akademik', 'urutan' => 4],
+            ['nama' => 'Sertifikat Prestasi', 'slug' => 'prestasi-sertifikat', 'format' => 'pdf,jpg,jpeg,png', 'max_size' => 3072, 'is_wajib' => true, 'kategori' => 'Prestasi', 'urutan' => 5],
+        ];
+
+        foreach ($dokumenPrestasi as $doc) {
+            PersyaratanDokumen::updateOrCreate(
+                ['slug' => $doc['slug'], 'jalur_pendaftaran_id' => $jalurPrestasi->id],
+                array_merge($doc, ['jalur_pendaftaran_id' => $jalurPrestasi->id, 'status' => true, 'keterangan' => "Dokumen wajib: {$doc['nama']}"])
+            );
+        }
+
+        // ─── 1 Peserta (Lengkap: User → Biodata → Orang Tua → Sekolah Asal → Pendaftaran → Selesai) ────────
+        $pesertaUser = User::firstOrCreate(['email' => 'peserta@ppdb.test'], [
+            'name' => 'Ahmad Rizky Pratama',
+            'password' => $password,
+            'email_verified_at' => now(),
+            'is_active' => true,
+        ]);
+        $pesertaUser->assignRole('Peserta');
+
+        $peserta = Peserta::updateOrCreate(['user_id' => $pesertaUser->id], [
+            'nisn' => '0065432101',
+            'nik' => '7371012345670001',
+            'nama_lengkap' => 'Ahmad Rizky Pratama',
+            'tempat_lahir' => 'Makassar',
+            'tanggal_lahir' => '2014-05-15',
+            'jenis_kelamin' => 'L',
+            'agama' => 'Islam',
+            'no_hp' => '081234567890',
+            'alamat' => 'Jl. Merdeka No. 10, Kel. Panakkukang',
+            'provinsi' => 'Sulawesi Selatan',
+            'kabupaten' => 'Makassar',
+            'kecamatan' => 'Panakkukang',
+            'kelurahan' => 'Panakkukang',
+            'kode_pos' => '90231',
         ]);
 
-        SambutanKepalaSekolah::create([
-            'nama' => 'Drs. Ahmad Supriyatna, M.Pd.',
-            'jabatan' => 'Kepala Sekolah',
-            'foto' => null,
-            'isi' => 'Assalamualaikum warahmatullahi wabarakatuh. Selamat datang di website SD Negeri Harapan Bangsa. Kami berkomitmen untuk memberikan pendidikan terbaik bagi putra-putri Anda. Melalui PPDB online ini, kami berharap proses pendaftaran menjadi lebih mudah, transparan, dan akuntabel. Mari bergabung bersama kami untuk mewujudkan generasi emas Indonesia.',
+        // Orang Tua
+        $peserta->orangTua()->updateOrCreate(['peserta_id' => $peserta->id], [
+            'nama_ayah' => 'Budi Pratama',
+            'nik_ayah' => '7371012345670010',
+            'pekerjaan_ayah' => 'PNS',
+            'nama_ibu' => 'Siti Rahmawati',
+            'nik_ibu' => '7371012345670011',
+            'pekerjaan_ibu' => 'Guru',
+            'penghasilan' => 8500000,
+            'no_hp' => '081234567891',
         ]);
 
-        $stats = [
-            ['judul' => 'Guru & Tenaga Pendidik', 'jumlah' => 42, 'icon' => 'fas fa-chalkboard-teacher'],
-            ['judul' => 'Siswa Aktif', 'jumlah' => 560, 'icon' => 'fas fa-user-graduate'],
-            ['judul' => 'Rombongan Belajar', 'jumlah' => 18, 'icon' => 'fas fa-school'],
-            ['judul' => 'Ekstrakurikuler', 'jumlah' => 12, 'icon' => 'fas fa-futbol'],
-            ['judul' => 'Prestasi Nasional', 'jumlah' => 25, 'icon' => 'fas fa-trophy'],
-        ];
-        foreach ($stats as $i => $s) {
-            StatistikSekolah::create(array_merge($s, ['urutan' => $i + 1]));
+        // Sekolah Asal
+        $peserta->sekolahAsal()->updateOrCreate(['peserta_id' => $peserta->id], [
+            'nama_sekolah' => 'SDN 3 Panakkukang',
+            'npsn' => '40305678',
+            'alamat' => 'Jl. Perintis Kemerdekaan No. 5',
+            'tahun_lulus' => 2026,
+        ]);
+
+        // Pendaftaran (status: diterima — full flow completed)
+        $pendaftaran = Pendaftaran::updateOrCreate(
+            ['user_id' => $pesertaUser->id, 'periode_ppdb_id' => $periode->id],
+            [
+                'peserta_id' => $peserta->id,
+                'tahun_ajaran_id' => $ta->id,
+                'jalur_pendaftaran_id' => $jalurZonasi->id,
+                'nomor_pendaftaran' => 'PPDB-2026-000001',
+                'status_pendaftaran' => 'diterima',
+                'tanggal_submit' => now()->subDays(10),
+            ]
+        );
+
+        // Dokumen yang di-upload (simulasi file path)
+        $dokumenWajib = PersyaratanDokumen::where('jalur_pendaftaran_id', $jalurZonasi->id)->where('is_wajib', true)->get();
+        foreach ($dokumenWajib as $i => $dok) {
+            DokumenPendaftaran::updateOrCreate(
+                ['pendaftaran_id' => $pendaftaran->id, 'persyaratan_dokumen_id' => $dok->id],
+                [
+                    'file' => "dummy/{$dok->slug}.pdf",
+                    'status' => 'terverifikasi',
+                    'verified_at' => now()->subDays(5),
+                ]
+            );
         }
 
-        $unggulan = [
-            ['judul' => 'Kurikulum Terpadu', 'deskripsi' => 'Mengintegrasikan kurikulum nasional dengan nilai-nilai karakter dan keagamaan.', 'icon' => 'fas fa-book-open', 'urutan' => 1],
-            ['judul' => 'Guru Profesional', 'deskripsi' => 'Tenaga pendidik bersertifikasi dan berpengalaman di bidangnya masing-masing.', 'icon' => 'fas fa-user-tie', 'urutan' => 2],
-            ['judul' => 'Fasilitas Lengkap', 'deskripsi' => 'Lab komputer, perpustakaan digital, lapangan olahraga, dan ruang multimedia.', 'icon' => 'fas fa-building', 'urutan' => 3],
-            ['judul' => 'Pembiasaan Karakter', 'deskripsi' => 'Program pembiasaan sholat dhuha, literasi pagi, dan jumat bersih.', 'icon' => 'fas fa-heart', 'urutan' => 4],
+        // Verifikasi
+        VerifikasiPendaftaran::updateOrCreate(
+            ['pendaftaran_id' => $pendaftaran->id],
+            [
+                'verifikator_id' => $verifikator->id,
+                'status' => 'terverifikasi',
+                'catatan' => 'Semua dokumen lengkap dan valid.',
+                'tanggal_verifikasi' => now()->subDays(5),
+            ]
+        );
+
+        // Hasil Seleksi
+        HasilSeleksi::updateOrCreate(
+            ['pendaftaran_id' => $pendaftaran->id],
+            [
+                'nilai' => 92.50,
+                'peringkat' => 3,
+                'status' => 'diterima',
+                'keterangan' => 'Selamat! Anda diterima di SDN 1 Maju Makmur.',
+            ]
+        );
+
+        // Daftar Ulang
+        DaftarUlang::updateOrCreate(
+            ['pendaftaran_id' => $pendaftaran->id],
+            [
+                'status' => 'sudah',
+                'tanggal_daftar_ulang' => now()->subDays(2),
+                'catatan' => 'Daftar ulang selesai, siswa sudah melengkapi berkas.',
+            ]
+        );
+
+        // ─── CMS Content ────────────────────────────────────────
+
+        // Hero Banners
+        HeroBanner::updateOrCreate(['judul' => 'PPDB 2026/2027'], [
+            'sub_judul' => 'Penerimaan Peserta Didik Baru Telah Dibuka',
+            'deskripsi' => 'Daftar sekarang dan wujudkan masa depan gemilang bersama kami. Pendaftaran 100% online, mudah, dan transparan.',
+            'gambar' => 'dummy/hero-1.jpg',
+            'button_text' => 'Daftar Sekarang',
+            'button_link' => '/register',
+            'urutan' => 1,
+            'status' => true,
+        ]);
+
+        HeroBanner::updateOrCreate(['judul' => 'Sekolah Unggulan Terakreditasi A'], [
+            'sub_judul' => 'Pendidikan Berkualitas untuk Generasi Cemerlang',
+            'deskripsi' => 'Tenaga pengajar profesional, fasilitas lengkap, dan kurikulum terdepan.',
+            'gambar' => 'dummy/hero-2.jpg',
+            'button_text' => 'Selengkapnya',
+            'button_link' => '/berita',
+            'urutan' => 2,
+            'status' => true,
+        ]);
+
+        // Sambutan Kepala Sekolah
+        SambutanKepalaSekolah::updateOrCreate(['jabatan' => 'Kepala Sekolah'], [
+            'nama' => 'Drs. H. Muhammad Idrus, M.Pd.',
+            'foto' => 'dummy/kepsek.jpg',
+            'isi' => 'Assalamualaikum Warahmatullahi Wabarakatuh. Selamat datang di website resmi SDN 1 Maju Makmur. Kami berkomitmen untuk memberikan pendidikan terbaik bagi putra-putri tercinta. Melalui sistem PPDB online ini, kami berusaha memberikan kemudahan akses bagi seluruh calon peserta didik baru. Mari bersama-sama membangun generasi yang cerdas, berkarakter, dan berprestasi.',
+        ]);
+
+        // Statistik Sekolah
+        $statistik = [
+            ['judul' => 'Siswa Aktif', 'jumlah' => 1250, 'icon' => 'fas fa-user-graduate', 'urutan' => 1],
+            ['judul' => 'Guru & Staff', 'jumlah' => 65, 'icon' => 'fas fa-chalkboard-teacher', 'urutan' => 2],
+            ['judul' => 'Rombel', 'jumlah' => 36, 'icon' => 'fas fa-door-open', 'urutan' => 3],
+            ['judul' => 'Prestasi', 'jumlah' => 128, 'icon' => 'fas fa-trophy', 'urutan' => 4],
         ];
-        foreach ($unggulan as $u) {
-            KeunggulanSekolah::create($u);
+        foreach ($statistik as $stat) {
+            StatistikSekolah::updateOrCreate(['judul' => $stat['judul']], $stat);
         }
 
+        // Keunggulan Sekolah
+        $keunggulan = [
+            ['judul' => 'Kurikulum Merdeka', 'deskripsi' => 'Penerapan kurikulum terbaru dengan pendekatan projek penguatan profil pelajar pancasila.', 'icon' => 'fas fa-book-open', 'urutan' => 1],
+            ['judul' => 'Laboratorium Komputer', 'deskripsi' => 'Fasilitas lab komputer modern dengan akses internet unlimited untuk pembelajaran digital.', 'icon' => 'fas fa-laptop-code', 'urutan' => 2],
+            ['judul' => 'Program Tahfidz', 'deskripsi' => 'Program menghafal Al-Qur\'an dengan metode yang menyenangkan dan bimbingan ustadz profesional.', 'icon' => 'fas fa-book', 'urutan' => 3],
+            ['judul' => 'Ekstrakurikuler Lengkap', 'deskripsi' => 'Lebih dari 15 kegiatan ekstrakurikuler: pramuka, robotik, futsal, renang, dan lainnya.', 'icon' => 'fas fa-running', 'urutan' => 4],
+        ];
+        foreach ($keunggulan as $k) {
+            KeunggulanSekolah::updateOrCreate(['judul' => $k['judul']], array_merge($k, ['gambar' => null]));
+        }
+
+        // Tahapan PPDB
         $tahapan = [
-            ['judul' => 'Pendaftaran Online', 'deskripsi' => 'Calon siswa mengisi formulir pendaftaran melalui website resmi sekolah.', 'urutan' => 1],
-            ['judul' => 'Verifikasi Dokumen', 'deskripsi' => 'Petugas memverifikasi kelengkapan dan keabsahan dokumen pendaftaran.', 'urutan' => 2],
-            ['judul' => 'Seleksi', 'deskripsi' => 'Proses seleksi berdasarkan jalur pendaftaran yang dipilih.', 'urutan' => 3],
-            ['judul' => 'Pengumuman', 'deskripsi' => 'Hasil seleksi diumumkan melalui website dan papan pengumuman sekolah.', 'urutan' => 4],
-            ['judul' => 'Daftar Ulang', 'deskripsi' => 'Calon siswa yang diterima melakukan daftar ulang untuk konfirmasi.', 'urutan' => 5],
+            ['judul' => 'Pendaftaran Online', 'deskripsi' => 'Calon peserta didik melakukan pendaftaran melalui website ini. Isi data diri, unggah dokumen, dan pilih jalur pendaftaran.', 'urutan' => 1],
+            ['judul' => 'Verifikasi Berkas', 'deskripsi' => 'Tim verifikator akan mengecek kelengkapan dan keaslian dokumen yang diunggah oleh calon peserta didik.', 'urutan' => 2],
+            ['judul' => 'Seleksi', 'deskripsi' => 'Proses seleksi berdasarkan kriteria jalur yang dipilih: zonasi, prestasi, atau jalur khusus lainnya.', 'urutan' => 3],
+            ['judul' => 'Pengumuman', 'deskripsi' => 'Hasil seleksi diumumkan melalui website. Peserta dapat melihat status pendaftaran di dashboard.', 'urutan' => 4],
+            ['judul' => 'Daftar Ulang', 'deskripsi' => 'Peserta yang diterima melakukan daftar ulang dengan melengkapi berkas dan membayar biaya pendaftaran.', 'urutan' => 5],
         ];
         foreach ($tahapan as $t) {
-            TahapanPpdb::create($t);
+            TahapanPpdb::updateOrCreate(['judul' => $t['judul']], $t);
         }
 
+        // Jadwal PPDB
         $jadwal = [
-            ['kegiatan' => 'Pendaftaran Gelombang 1', 'tanggal_mulai' => '2025-01-01', 'tanggal_selesai' => '2025-03-31', 'urutan' => 1],
-            ['kegiatan' => 'Verifikasi Berkas', 'tanggal_mulai' => '2025-04-01', 'tanggal_selesai' => '2025-04-15', 'urutan' => 2],
-            ['kegiatan' => 'Pengumuman Gelombang 1', 'tanggal_mulai' => '2025-04-20', 'tanggal_selesai' => null, 'urutan' => 3],
-            ['kegiatan' => 'Pendaftaran Gelombang 2', 'tanggal_mulai' => '2025-05-01', 'tanggal_selesai' => '2025-06-30', 'urutan' => 4],
-            ['kegiatan' => 'Masa Pengenalan Lingkungan Sekolah', 'tanggal_mulai' => '2025-07-14', 'tanggal_selesai' => '2025-07-16', 'urutan' => 5],
+            ['kegiatan' => 'Pendaftaran Dibuka', 'tanggal_mulai' => '2026-07-01', 'tanggal_selesai' => '2026-07-15', 'deskripsi' => 'Masa pendaftaran online gelombang 1', 'urutan' => 1],
+            ['kegiatan' => 'Verifikasi Berkas', 'tanggal_mulai' => '2026-07-16', 'tanggal_selesai' => '2026-07-25', 'deskripsi' => 'Proses verifikasi dokumen oleh tim', 'urutan' => 2],
+            ['kegiatan' => 'Seleksi & Penilaian', 'tanggal_mulai' => '2026-07-26', 'tanggal_selesai' => '2026-08-01', 'deskripsi' => 'Proses seleksi dan penilaian', 'urutan' => 3],
+            ['kegiatan' => 'Pengumuman Kelulusan', 'tanggal_mulai' => '2026-08-05', 'tanggal_selesai' => null, 'deskripsi' => 'Pengumuman hasil seleksi melalui website', 'urutan' => 4],
+            ['kegiatan' => 'Daftar Ulang', 'tanggal_mulai' => '2026-08-06', 'tanggal_selesai' => '2026-08-20', 'deskripsi' => 'Daftar ulang bagi peserta yang diterima', 'urutan' => 5],
         ];
         foreach ($jadwal as $j) {
-            JadwalPpdb::create($j);
+            JadwalPpdb::updateOrCreate(['kegiatan' => $j['kegiatan']], $j);
         }
 
+        // FAQ
         $faqs = [
-            ['pertanyaan' => 'Apa saja syarat pendaftaran PPDB?', 'jawaban' => 'Syarat utama meliputi: Kartu Keluarga, Akta Kelahiran, Pas Foto terbaru, dan dokumen tambahan sesuai jalur pendaftaran yang dipilih.', 'urutan' => 1, 'status' => true],
-            ['pertanyaan' => 'Berapa biaya pendaftaran?', 'jawaban' => 'Pendaftaran PPDB di SD Negeri Harapan Bangsa TIDAK DIPUNGUT BIAYA alias gratis.', 'urutan' => 2, 'status' => true],
-            ['pertanyaan' => 'Bagaimana cara memilih jalur pendaftaran?', 'jawaban' => 'Anda dapat memilih jalur yang sesuai dengan kriteria: Zonasi (berdasarkan jarak), Prestasi (akademik/non-akademik), Afirmasi (keluarga kurang mampu), atau Perpindahan Tugas Orang Tua.', 'urutan' => 3, 'status' => true],
-            ['pertanyaan' => 'Kapan pengumuman hasil seleksi?', 'jawaban' => 'Pengumuman hasil seleksi akan diinformasikan melalui website sekolah dan papan pengumuman sesuai jadwal yang telah ditentukan.', 'urutan' => 4, 'status' => true],
-            ['pertanyaan' => 'Apakah bisa mengubah data setelah disubmit?', 'jawaban' => 'Setelah data disubmit, Anda tidak dapat mengubahnya. Pastikan data yang diisi sudah benar dan lengkap sebelum menekan tombol submit.', 'urutan' => 5, 'status' => true],
+            ['pertanyaan' => 'Bagaimana cara mendaftar PPDB online?', 'jawaban' => 'Klik tombol "Daftar Sekarang" pada halaman utama, lalu ikuti langkah-langkah pendaftaran: isi biodata, data orang tua, sekolah asal, pilih jalur, unggah dokumen, dan submit pendaftaran.', 'urutan' => 1, 'status' => true],
+            ['pertanyaan' => 'Dokumen apa saja yang harus diunggah?', 'jawaban' => 'Dokumen wajib meliputi: pas foto 3x4, Kartu Keluarga, Akta Kelahiran, dan Ijazah/SKL. Beberapa jalur mungkin mempersyaratkan dokumen tambahan seperti sertifikat prestasi atau SKTM.', 'urutan' => 2, 'status' => true],
+            ['pertanyaan' => 'Bagaimana mengetahui hasil seleksi?', 'jawaban' => 'Hasil seleksi dapat dilihat melalui dashboard peserta setelah pengumuman. Anda juga akan mendapat notifikasi terkait perubahan status pendaftaran.', 'urutan' => 3, 'status' => true],
+            ['pertanyaan' => 'Apakah bisa mendaftar di lebih dari satu jalur?', 'jawaban' => 'Tidak, setiap peserta hanya dapat mendaftar di satu jalur pendaftaran. Pastikan memilih jalur yang sesuai dengan kriteria Anda.', 'urutan' => 4, 'status' => true],
+            ['pertanyaan' => 'Bagaimana jika dokumen saya ditolak?', 'jawaban' => 'Jika dokumen dinyatakan revisi, Anda akan mendapat notifikasi. Silakan perbaiki dan unggah ulang dokumen tersebut sebelum batas waktu yang ditentukan.', 'urutan' => 5, 'status' => true],
         ];
         foreach ($faqs as $f) {
-            Faq::create($f);
+            Faq::updateOrCreate(['pertanyaan' => $f['pertanyaan']], $f);
         }
 
-        Berita::create([
-            'judul' => 'Siswa SD Harapan Bangsa Raih Juara Olimpiade Sains Nasional',
-            'slug' => 'siswa-raih-juara-osn',
-            'thumbnail' => null,
-            'konten' => "Kabar membanggakan datang dari siswa SD Negeri Harapan Bangsa. Tim olimpiade sains berhasil meraih medali emas dalam ajang Olimpiade Sains Nasional tingkat Kabupaten. Prestasi ini membuktikan kualitas pendidikan sains di sekolah kami.\n\nSelamat kepada para pemenang dan pembimbing yang telah berdedikasi tinggi.",
-            'status' => true,
-            'published_at' => '2025-02-15 08:00:00',
-        ]);
-        Berita::create([
-            'judul' => 'Kegiatan Class Meeting Semester Ganjil 2025',
-            'slug' => 'kegiatan-class-meeting-2025',
-            'thumbnail' => null,
-            'konten' => "Setelah menyelesaikan ujian akhir semester, SD Negeri Harapan Bangsa mengadakan kegiatan Class Meeting yang diikuti oleh seluruh siswa. Berbagai perlombaan digelar mulai dari futsal, cerdas cermat, hingga lomba kebersihan kelas. Kegiatan ini bertujuan untuk mempererat tali persaudaraan antar siswa.",
-            'status' => true,
-            'published_at' => '2025-01-20 10:00:00',
-        ]);
-        Berita::create([
-            'judul' => 'Pendaftaran PPDB Tahun Ajaran 2025/2026 Dibuka',
-            'slug' => 'pendaftaran-ppdb-2025-2026-dibuka',
-            'thumbnail' => null,
-            'konten' => "SD Negeri Harapan Bangsa membuka pendaftaran Penerimaan Peserta Didik Baru (PPDB) untuk tahun ajaran 2025/2026. Pendaftaran dilaksanakan secara online melalui website resmi sekolah. Tersedia 4 jalur pendaftaran: Zonasi, Prestasi, Afirmasi, dan Perpindahan Tugas Orang Tua.\n\nYuk daftarkan putra-putri Anda segera!",
-            'status' => true,
-            'published_at' => '2025-01-01 00:00:00',
-        ]);
-
-        $pengumuman = [
-            ['judul' => 'Hasil Seleksi PPDB Gelombang 1', 'slug' => 'hasil-seleksi-gelombang-1', 'isi' => 'Hasil seleksi PPDB Gelombang 1 tahun ajaran 2025/2026 telah diumumkan. Silakan cek status pendaftaran melalui dashboard masing-masing.', 'status' => true],
-            ['judul' => 'Jadwal MPLS Tahun Ajaran 2025/2026', 'slug' => 'jadwal-mpls-2025-2026', 'isi' => 'Masa Pengenalan Lingkungan Sekolah (MPLS) akan dilaksanakan pada tanggal 14-16 Juli 2025. Siswa baru diwajibkan mengikuti seluruh rangkaian kegiatan.', 'status' => true],
-            ['judul' => 'Pengambilan Seragam dan Perlengkapan Sekolah', 'slug' => 'pengambilan-seragam-sekolah', 'isi' => 'Pengambilan seragam dan perlengkapan sekolah dapat dilakukan di koperasi sekolah mulai tanggal 1 Juli 2025 dengan membawa bukti daftar ulang.', 'status' => true],
+        // Berita
+        $beritas = [
+            ['judul' => 'PPDB 2026/2027 Resmi Dibuka', 'slug' => 'ppdb-2026-2027-resmi-dibuka', 'konten' => '<p>Dengan bangga kami umumkan bahwa Penerimaan Peserta Didik Baru tahun ajaran 2026/2027 telah resmi dibuka. Pendaftaran dapat dilakukan secara online melalui website ini mulai tanggal 1 Juli 2026.</p><p>Segera daftarkan putra-putri Anda dan jadilah bagian dari keluarga besar SDN 1 Maju Makmur.</p>', 'status' => true, 'published_at' => now()->subDays(3)],
+            ['judul' => 'Kurikulum Merdeka Diterapkan Mulai Tahun Ajaran Baru', 'slug' => 'kurikulum-merdeka-diterapkan', 'konten' => '<p>SDN 1 Maju Makmur siap menerapkan Kurikulum Merdeka secara penuh. Kurikulum ini memberikan fleksibilitas lebih bagi guru dan siswa dalam proses pembelajaran.</p>', 'status' => true, 'published_at' => now()->subDays(7)],
+            ['judul' => 'Prestasi Siswa di Olimpiade Sains Tingkat Provinsi', 'slug' => 'prestasi-siswa-olimpiade-sains', 'konten' => '<p>Selamat kepada 5 siswa kami yang telah meraih medali emas dan perak dalam Olimpiade Sains tingkat Provinsi Sulawesi Selatan. Prestasi ini membuktikan komitmen sekolah dalam mengembangkan potensi siswa.</p>', 'status' => true, 'published_at' => now()->subDays(14)],
         ];
-        foreach ($pengumuman as $p) {
-            Pengumuman::create($p);
+        foreach ($beritas as $b) {
+            Berita::updateOrCreate(['slug' => $b['slug']], $b);
         }
 
-        $heroes = [
-            ['judul' => 'Selamat Datang di PPDB Online', 'sub_judul' => 'SD Negeri Harapan Bangsa', 'deskripsi' => 'Proses pendaftaran mudah, transparan, dan akuntabel', 'gambar' => 'placeholder/hero-banner.jpg', 'button_text' => 'Daftar Sekarang', 'button_link' => '/register', 'urutan' => 1, 'status' => true],
-            ['judul' => 'Wujudkan Generasi Berprestasi', 'sub_judul' => 'Bersama Kami', 'deskripsi' => 'Pendidikan berkualitas dengan kurikulum terpadu dan tenaga pendidik profesional', 'gambar' => 'placeholder/hero-banner.jpg', 'button_text' => 'Informasi Pendaftaran', 'button_link' => '/informasi', 'urutan' => 2, 'status' => true],
+        // Pengumuman
+        $pengumumans = [
+            ['judul' => 'Jadwal Pelaksanaan PPDB 2026/2027', 'slug' => 'jadwal-ppdb-2026-2027', 'isi' => 'Pendaftaran PPDB 2026/2027 dibuka mulai 1 Juli hingga 31 Agustus 2026. Pengumuman kelulusan pada 5 Agustus 2026. Daftar ulang 6-20 Agustus 2026.', 'status' => true],
+            ['judul' => 'Panduan Lengkap PPDB Online', 'slug' => 'panduan-lengkap-ppdb-online', 'isi' => 'Unduh panduan lengkap pendaftaran PPDB online di halaman ini. Panduan berisi langkah demi langkah proses pendaftaran hingga daftar ulang.', 'status' => true],
         ];
-        foreach ($heroes as $h) {
-            HeroBanner::create($h);
+        foreach ($pengumumans as $p) {
+            Pengumuman::updateOrCreate(['slug' => $p['slug']], $p);
         }
 
-        $galeri = [
-            ['judul' => 'Kegiatan Belajar Mengajar', 'kategori' => 'Kegiatan'],
-            ['judul' => 'Lomba 17 Agustus', 'kategori' => 'Kegiatan'],
-            ['judul' => 'Perpustakaan Digital', 'kategori' => 'Fasilitas'],
-            ['judul' => 'Lab Komputer', 'kategori' => 'Fasilitas'],
+        // Galeri
+        $galeris = [
+            ['judul' => 'Upacara Bendera Senin Pagi', 'gambar' => 'dummy/galeri-1.jpg', 'kategori' => 'Kegiatan'],
+            ['judul' => 'Perayaan Hari Pendidikan Nasional', 'gambar' => 'dummy/galeri-2.jpg', 'kategori' => 'Event'],
+            ['judul' => 'Kegiatan Pramuka', 'gambar' => 'dummy/galeri-3.jpg', 'kategori' => 'Ekstrakurikuler'],
+            ['judul' => 'Laboratorium Sains', 'gambar' => 'dummy/galeri-4.jpg', 'kategori' => 'Fasilitas'],
+            ['judul' => 'Perpustakaan Sekolah', 'gambar' => 'dummy/galeri-5.jpg', 'kategori' => 'Fasilitas'],
+            ['judul' => 'Lomba Kreativitas Siswa', 'gambar' => 'dummy/galeri-6.jpg', 'kategori' => 'Event'],
         ];
-        foreach ($galeri as $g) {
-            Galeri::create(array_merge($g, ['gambar' => 'placeholder/galeri.jpg']));
+        foreach ($galeris as $g) {
+            Galeri::updateOrCreate(['judul' => $g['judul']], $g);
         }
 
-        $videos = [
-            ['judul' => 'Profil SD Negeri Harapan Bangsa', 'youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
-            ['judul' => 'Kegiatan Ekstrakurikuler', 'youtube_url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'],
-        ];
-        foreach ($videos as $v) {
-            Video::create($v);
-        }
-
+        // Testimoni
         $testimonis = [
-            ['nama' => 'Budi Santoso', 'isi' => 'Saya sangat puas dengan kualitas pendidikan di SD Harapan Bangsa. Anak saya berkembang pesat baik akademik maupun karakternya.', 'angkatan' => '2020', 'status' => true],
-            ['nama' => 'Siti Nurhaliza', 'isi' => 'Proses pendaftaran online sangat mudah dan transparan. Terima kasih SD Harapan Bangsa!', 'angkatan' => '2024', 'status' => true],
-            ['nama' => 'Ahmad Rizki', 'isi' => 'Guru-guru sangat profesional dan peduli dengan perkembangan siswa. Sekolah yang recommended!', 'angkatan' => '2021', 'status' => true],
+            ['nama' => 'Ibu Sarah Wijaya', 'isi' => 'Alhamdulillah, anak saya sangat senang belajar di sini. Guru-gurunya ramah dan peduli. Fasilitas sekolah juga sangat memadai.', 'angkatan' => '2024', 'status' => true],
+            ['nama' => 'Bapak Andi Kurniawan', 'isi' => 'Sekolah ini memberikan pendidikan yang holistik. Tidak hanya akademik, tapi juga karakter dan keterampilan hidup. Sangat direkomendasikan.', 'angkatan' => '2023', 'status' => true],
+            ['nama' => 'Ibu Rina Susanti', 'isi' => 'Program tahfidz-nya luar biasa. Anak saya sekarang sudah hafal 5 juz. Terima kasih SDN 1 Maju Makmur!', 'angkatan' => '2025', 'status' => true],
         ];
         foreach ($testimonis as $t) {
-            Testimoni::create($t);
+            Testimoni::updateOrCreate(['nama' => $t['nama']], $t);
         }
 
-        $partners = [
-            ['nama' => 'Kemendikbud', 'website' => 'https://kemendikbud.go.id', 'urutan' => 1, 'status' => true],
-            ['nama' => 'Dinas Pendidikan Jawa Barat', 'website' => 'https://disdik.jabarprov.go.id', 'urutan' => 2, 'status' => true],
-            ['nama' => 'Kecamatan Citarum', 'website' => null, 'urutan' => 3, 'status' => true],
-            ['nama' => 'Puskesmas Citarum', 'website' => null, 'urutan' => 4, 'status' => true],
-        ];
-        foreach ($partners as $p) {
-            Partner::create(array_merge($p, ['logo' => 'placeholder/partner.png']));
-        }
-
-        $sosmeds = [
-            ['platform' => 'Facebook', 'icon' => 'fab fa-facebook', 'url' => 'https://facebook.com/sdharapanbangsa', 'urutan' => 1, 'status' => true],
-            ['platform' => 'Instagram', 'icon' => 'fab fa-instagram', 'url' => 'https://instagram.com/sdharapanbangsa', 'urutan' => 2, 'status' => true],
-            ['platform' => 'YouTube', 'icon' => 'fab fa-youtube', 'url' => 'https://youtube.com/@sdharapanbangsa', 'urutan' => 3, 'status' => true],
-            ['platform' => 'TikTok', 'icon' => 'fab fa-tiktok', 'url' => 'https://tiktok.com/@sdharapanbangsa', 'urutan' => 4, 'status' => true],
-        ];
-        foreach ($sosmeds as $s) {
-            MediaSosial::create($s);
-        }
-
-        Kontak::create([
-            'alamat' => 'Jl. Merdeka No. 123, Kel. Citarum, Kec. Bandung Wetan, Kota Bandung 40115',
-            'email' => 'info@sdharapanbangsa.sch.id',
-            'telepon' => '(022) 1234567',
-            'whatsapp' => '08123456789',
-            'google_maps' => '<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.1!2d107.6!3d-6.9!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNsKwNTQnMDAuMCJTIDEwN8KwMzYnMDAuMCJF!5e0!3m2!1sid!2sid!4v1" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>',
+        // Kontak
+        Kontak::updateOrCreate(['id' => 1], [
+            'alamat' => 'Jl. Pendidikan No. 123, Kel. Mekar, Kec. Tamalate, Kota Makassar, Sulawesi Selatan 90231',
+            'email' => 'info@sdn1majumakmur.sch.id',
+            'telepon' => '(0411) 123456',
+            'whatsapp' => '6281234567890',
+            'google_maps' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3973.123456789!2d119.4!3d-5.14!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNcKwMDgnMjQuMCJTIDExOcKwMjQnMDAuMCJF!5e0!3m2!1sid!2sid!4v1234567890',
         ]);
 
-        Footer::create([
-            'copyright' => '2025 SD Negeri Harapan Bangsa. All rights reserved.',
-            'deskripsi' => 'SD Negeri Harapan Bangsa berkomitmen memberikan pendidikan terbaik untuk generasi penerus bangsa.',
+        // Footer
+        \App\Models\Footer::updateOrCreate(['id' => 1], [
+            'copyright' => date('Y') . ' SDN 1 Maju Makmur. All rights reserved.',
+            'deskripsi' => 'Mewujudkan peserta didik yang beriman, cerdas, kreatif, dan berkarakter mulia.',
+            'alamat' => 'Jl. Pendidikan No. 123, Makassar',
+            'email' => 'info@sdn1majumakmur.sch.id',
+            'telepon' => '(0411) 123456',
         ]);
 
-        Seo::create([
-            'meta_title' => 'PPDB SD Negeri Harapan Bangsa - Penerimaan Peserta Didik Baru',
-            'meta_description' => 'PPDB Online SD Negeri Harapan Bangsa. Pendaftaran mudah, transparan, dan akuntabel. Tersedia jalur Zonasi, Prestasi, Afirmasi, dan Perpindahan Tugas Orang Tua.',
-            'meta_keywords' => 'PPDB, pendaftaran sekolah, SD, penerimaan siswa baru, pendidikan',
-            'og_image' => null,
-            'favicon' => null,
+        // SEO
+        Seo::updateOrCreate(['id' => 1], [
+            'meta_title' => 'PPDB Online - SDN 1 Maju Makmur',
+            'meta_description' => 'Penerimaan Peserta Didik Baru SDN 1 Maju Makmur Tahun Ajaran 2026/2027. Daftar online, mudah, dan transparan.',
+            'meta_keywords' => 'PPDB, Penerimaan Siswa Baru, SDN 1 Maju Makmur, Sekolah Dasar, Makassar',
         ]);
-    }
 
-    protected function seedPendaftaran(): void
-    {
-        $jalurs = JalurPendaftaran::pluck('id', 'slug');
-        $periode = PeriodePpdb::where('status_aktif', true)->first();
-        $tahunAjaran = TahunAjaran::where('status_aktif', true)->first();
+        // ─── Notifications (sample for admin) ───────────────────
+        \App\Models\Notification::createNotif(
+            'Pendaftaran baru dari Ahmad Rizky Pratama',
+            '/admin/verifikasi',
+            'plus-circle',
+            $superadmin
+        );
 
-        $siswaData = [
-            ['name' => 'Ahmad Fauzi', 'nisn' => '1234567890', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'diterima'],
-            ['name' => 'Siti Rahmawati', 'nisn' => '1234567891', 'jenis_kelamin' => 'P', 'jalur' => 'prestasi', 'status' => 'diterima'],
-            ['name' => 'Doni Prasetyo', 'nisn' => '1234567892', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'diterima'],
-            ['name' => 'Rina Marlina', 'nisn' => '1234567893', 'jenis_kelamin' => 'P', 'jalur' => 'afirmasi', 'status' => 'diterima'],
-            ['name' => 'Rudi Hermawan', 'nisn' => '1234567894', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'verifikasi'],
-            ['name' => 'Dewi Sartika', 'nisn' => '1234567895', 'jenis_kelamin' => 'P', 'jalur' => 'prestasi', 'status' => 'verifikasi'],
-            ['name' => 'Agus Wijaya', 'nisn' => '1234567896', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'verifikasi'],
-            ['name' => 'Fitri Handayani', 'nisn' => '1234567897', 'jenis_kelamin' => 'P', 'jalur' => 'perpindahan-tugas-orang-tua', 'status' => 'submitted'],
-            ['name' => 'Bayu Saputra', 'nisn' => '1234567898', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'submitted'],
-            ['name' => 'Ani Nurjanah', 'nisn' => '1234567899', 'jenis_kelamin' => 'P', 'jalur' => 'afirmasi', 'status' => 'submitted'],
-            ['name' => 'Cahyo Nugroho', 'nisn' => '1234567800', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'cadangan'],
-            ['name' => 'Indah Permatasari', 'nisn' => '1234567801', 'jenis_kelamin' => 'P', 'jalur' => 'prestasi', 'status' => 'cadangan'],
-            ['name' => 'Eko Prasetyo', 'nisn' => '1234567802', 'jenis_kelamin' => 'L', 'jalur' => 'zonasi', 'status' => 'ditolak'],
-            ['name' => 'Tari Susanti', 'nisn' => '1234567803', 'jenis_kelamin' => 'P', 'jalur' => 'zonasi', 'status' => 'draft'],
-            ['name' => 'Gilang Ramadan', 'nisn' => '1234567804', 'jenis_kelamin' => 'L', 'jalur' => 'prestasi', 'status' => 'draft'],
-        ];
-
-        foreach ($siswaData as $i => $data) {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => str($data['name'])->lower()->replace(' ', '.')->append('@mail.test')->value(),
-                'password' => bcrypt('password'),
-                'is_active' => true,
-                'email_verified_at' => now(),
-            ]);
-            $user->assignRole('Siswa');
-
-            $siswa = Siswa::create([
-                'user_id' => $user->id,
-                'nisn' => $data['nisn'],
-                'nik' => '320' . str_pad((string) $i, 12, '0', STR_PAD_LEFT),
-                'nama_lengkap' => $data['name'],
-                'tempat_lahir' => fake()->randomElement(['Bandung', 'Jakarta', 'Cimahi', 'Sumedang']),
-                'tanggal_lahir' => fake()->dateTimeBetween('-15 years', '-11 years')->format('Y-m-d'),
-                'jenis_kelamin' => $data['jenis_kelamin'],
-                'agama' => fake()->randomElement(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha']),
-                'alamat' => fake()->streetAddress(),
-                'provinsi' => 'Jawa Barat',
-                'kabupaten' => fake()->randomElement(['Bandung', 'Bandung Barat', 'Cimahi']),
-                'kecamatan' => fake()->streetName(),
-                'kelurahan' => fake()->streetSuffix(),
-                'kode_pos' => fake()->postcode(),
-            ]);
-
-            OrangTua::factory()->create(['siswa_id' => $siswa->id]);
-            SekolahAsal::factory()->create(['siswa_id' => $siswa->id]);
-
-            $isSubmitted = !in_array($data['status'], ['draft']);
-            $pendaftaran = Pendaftaran::create([
-                'user_id' => $user->id,
-                'siswa_id' => $siswa->id,
-                'tahun_ajaran_id' => $tahunAjaran->id,
-                'periode_ppdb_id' => $periode->id,
-                'jalur_pendaftaran_id' => $jalurs[$data['jalur']],
-                'nomor_pendaftaran' => 'PPDB-2025-' . str_pad((string) ($i + 1), 3, '0', STR_PAD_LEFT),
-                'status_pendaftaran' => $data['status'],
-                'tanggal_submit' => $isSubmitted ? now()->subDays(rand(5, 60)) : null,
-            ]);
-
-            if ($isSubmitted) {
-                $persyaratans = PersyaratanDokumen::where('jalur_pendaftaran_id', $jalurs[$data['jalur']])->get();
-                foreach ($persyaratans as $pers) {
-                    DokumenPendaftaran::factory()->create([
-                        'pendaftaran_id' => $pendaftaran->id,
-                        'persyaratan_dokumen_id' => $pers->id,
-                    ]);
-                }
-            }
-
-            if ($data['status'] === 'verifikasi') {
-                $verifikator = User::role('Verifikator')->first() ?? User::role('Admin')->first();
-                VerifikasiPendaftaran::create([
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'verifikator_id' => $verifikator->id,
-                    'status' => 'terverifikasi',
-                    'catatan' => 'Dokumen lengkap dan valid.',
-                    'tanggal_verifikasi' => now()->subDays(rand(1, 10)),
-                ]);
-            }
-
-            if (in_array($data['status'], ['diterima', 'cadangan'])) {
-                HasilSeleksi::create([
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'nilai' => fake()->randomFloat(2, 60, 100),
-                    'peringkat' => null,
-                    'status' => $data['status'] === 'diterima' ? 'diterima' : 'cadangan',
-                    'keterangan' => $data['status'] === 'diterima' ? 'Selamat! Anda dinyatakan lolos seleksi.' : 'Anda masuk dalam daftar cadangan.',
-                ]);
-            }
-
-            if ($data['status'] === 'ditolak') {
-                HasilSeleksi::create([
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'nilai' => fake()->randomFloat(2, 30, 59),
-                    'peringkat' => null,
-                    'status' => 'tidak_diterima',
-                    'keterangan' => 'Mohon maaf, Anda belum lolos seleksi untuk tahun ajaran ini.',
-                ]);
-            }
-
-            if ($data['status'] === 'diterima' && $i < 2) {
-                DaftarUlang::create([
-                    'pendaftaran_id' => $pendaftaran->id,
-                    'status' => 'sudah',
-                    'tanggal_daftar_ulang' => now()->subDays(rand(1, 5)),
-                ]);
-            }
-        }
+        \App\Models\Notification::createNotif(
+            'Pengumuman PPDB 2026/2027 telah dipublikasikan',
+            '/admin/pengumuman',
+            'megaphone',
+            $superadmin
+        );
     }
 }

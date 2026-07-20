@@ -12,10 +12,13 @@ class PersyaratanDokumen extends Model
         'jalur_pendaftaran_id',
         'nama',
         'slug',
+        'keterangan',
         'format',
         'max_size',
         'is_wajib',
         'status',
+        'kategori',
+        'urutan',
     ];
 
     protected $casts = [

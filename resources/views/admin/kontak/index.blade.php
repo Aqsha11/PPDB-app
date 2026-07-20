@@ -1,45 +1,50 @@
 <x-app-layout>
-    <x-slot name="header">Kontak</x-slot>
+    <x-slot name="header">Pesan Masuk</x-slot>
 
     <div class="space-y-6">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'route' => 'admin.dashboard'], ['label' => 'Kontak']]" />
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Pesan Masuk'],
+        ]" />
+
+        <x-admin.module-header title="Pesan Masuk" description="Lihat dan kelola pesan masuk dari formulir kontak halaman publik. Balas atau hapus pesan yang sudah tidak diperlukan.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.kontak.update') }}" method="POST" class="space-y-6">
-                @csrf @method('PUT')
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Alamat</label>
-                        <textarea name="alamat" rows="3" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>{{ old('alamat', $data->alamat ?? '') }}</textarea>
-                        @error('alamat') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Google Maps Embed</label>
-                        <textarea name="maps_embed" rows="3" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="<iframe src=...>{{ old('maps_embed', $data->maps_embed ?? $data->google_maps ?? '') }}</textarea>
-                        @error('maps_embed') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Telepon</label>
-                        <input type="text" name="telepon" value="{{ old('telepon', $data->telepon ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('telepon') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                        <input type="email" name="email" value="{{ old('email', $data->email ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Jam Operasional</label>
-                        <input type="text" name="jam_operasional" value="{{ old('jam_operasional', $data->jam_operasional ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Sen - Jum: 07:00 - 16:00">
-                        @error('jam_operasional') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                </div>
-
-                <div class="flex justify-end pt-4 border-t border-gray-100">
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
+            <x-table :headers="['No', 'Nama', 'Email', 'Subjek', 'Pesan', 'Tanggal', 'Aksi']">
+                @forelse($data as $item)
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5 text-sm font-medium text-gray-900 dark:text-white">
+                            @unless($item->is_read)
+                                <span class="inline-block w-2 h-2 rounded-full bg-red-500 mr-1.5"></span>
+                            @endunless
+                            {{ $item->nama ?? '-' }}
+                        </td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400">{{ $item->email ?? '-' }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400">{{ $item->subjek ?? '-' }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400 max-w-xs truncate">{{ Str::limit($item->pesan ?? '', 60) }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400 whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-1">
+                                <x-icon-button :href="route('admin.kontak.show', $item->id)" variant="primary" title="Lihat">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.kontak.destroy', $item->id)" variant="danger" title="Hapus" :delete="true" />
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="px-5 py-12">
+                            <x-empty-state title="Belum ada pesan" description="Pesan dari formulir kontak akan muncul di sini." />
+                        </td>
+                    </tr>
+                @endforelse
+            </x-table>
         </x-card>
     </div>
 </x-app-layout>

@@ -2,74 +2,37 @@
 
 namespace App\Http\Controllers\Admin;
 
-
 use App\Http\Controllers\Controller;
-
-use App\Models\Kontak;
-
+use App\Models\PesanKontak;
 use Illuminate\Http\Request;
-
-
 
 class KontakController extends Controller
 {
-
-
     public function index()
     {
-
-
         $this->authorize('cms.manage');
 
+        $data = PesanKontak::latest()->get();
 
-        $data = Kontak::first();
-
-
-        return view(
-            'admin.kontak.index',
-            compact('data')
-        );
+        return view('admin.kontak.index', compact('data'));
     }
 
-
-
-
-
-    public function update(Request $request)
+    public function show($id)
     {
-
-
         $this->authorize('cms.manage');
 
+        $data = PesanKontak::findOrFail($id);
+        $data->update(['is_read' => true]);
 
-        Kontak::updateOrCreate(
+        return view('admin.kontak.show', compact('data'));
+    }
 
-            [
+    public function destroy($id)
+    {
+        $this->authorize('cms.manage');
 
-                'id' => 1
+        PesanKontak::findOrFail($id)->delete();
 
-            ],
-
-            $request->validate([
-
-
-                'alamat' => 'required',
-
-                'email' => 'nullable|email',
-
-                'telepon' => 'nullable',
-
-                'whatsapp' => 'nullable',
-
-                'google_maps' => 'nullable'
-
-            ])
-
-
-        );
-
-
-
-        return back();
+        return back()->with('success', 'Pesan berhasil dihapus.');
     }
 }

@@ -106,6 +106,6 @@ class SeoController extends Controller
 
 
 
-        return back();
+        return back()->with('success', 'SEO berhasil diperbarui.');
     }
 }

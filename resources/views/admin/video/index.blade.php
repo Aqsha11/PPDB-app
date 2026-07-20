@@ -1,57 +1,64 @@
 <x-app-layout>
     <x-slot name="header">Video</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, form: { judul: '', youtube_url: '' } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'Video']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Video'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola video YouTube</p>
-            <x-primary-button @click="open = true; form = { judul: '', youtube_url: '' }">
-                + Tambah Video
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Video" description="Kelola video YouTube sekolah yang ditampilkan di halaman publik. Tambahkan tautan video beserta judulnya.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.video.create') }}">
+                    + Tambah Video
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Judul', 'URL', 'Aksi']">
+            <x-table :headers="['No', 'Judul', 'URL Embed', 'Status Aktif', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 font-medium text-gray-900">{{ $item->judul }}</td>
-                        <td class="px-4 py-3 text-gray-500 max-w-[250px] truncate">
-                            <a href="{{ $item->youtube_url }}" target="_blank" class="text-blue-600 hover:underline">{{ $item->youtube_url }}</a>
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5 text-sm font-medium text-gray-900 dark:text-white">{{ $item->judul }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400 max-w-[250px] truncate">
+                            <a href="{{ $item->youtube_url }}" target="_blank" class="theme-text hover:underline">{{ $item->youtube_url }}</a>
                         </td>
-                        <td class="px-4 py-3">
-                            <form action="{{ route('admin.video.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus video ini?')">
-                                @csrf @method('DELETE')
-                                <x-danger-button type="submit">Hapus</x-danger-button>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.video.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Aktif' : 'Nonaktif' }}
+                                </button>
                             </form>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-1">
+                                <x-icon-button :href="route('admin.video.edit', $item->id)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.video.destroy', $item->id)" variant="danger" title="Hapus" :delete="true" />
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="3" class="px-4 py-8">
-                            <x-empty-state title="Belum ada video" description="Tambahkan video YouTube" />
+                        <td colspan="5" class="px-5 py-12">
+                            <x-empty-state title="Belum ada video" description="Tambahkan video YouTube untuk ditampilkan di halaman publik">
+                                <x-slot name="action">
+                                    <x-primary-button href="{{ route('admin.video.create') }}">+ Tambah Video</x-primary-button>
+                                </x-slot>
+                            </x-empty-state>
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="video-modal" :show="open" maxWidth="lg">
-            <form action="{{ route('admin.video.store') }}" method="POST" class="p-6 space-y-4">
-                @csrf
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul Video</label>
-                    <input type="text" name="judul" x-model="form.judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">URL YouTube</label>
-                    <input type="url" name="youtube_url" x-model="form.youtube_url" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required placeholder="https://www.youtube.com/watch?v=...">
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

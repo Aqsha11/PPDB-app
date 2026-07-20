@@ -1,5 +1,5 @@
 @php
-    $role = auth()->user()->roles->first()->name ?? 'siswa';
+    $role = auth()->user()->roles->first()->name ?? 'peserta';
 @endphp
 <header class="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
     <div class="flex items-center justify-between h-16 px-4 sm:px-6">
@@ -9,12 +9,12 @@
             </svg>
         </button>
         <div class="hidden lg:block">
-            <span class="text-sm text-gray-500">{{ now()->format('l, d F Y') }}</span>
+            <span class="text-sm text-gray-500">{{ now()->translatedFormat('l, j F Y') }}</span>
         </div>
         <div class="flex items-center space-x-4">
             <div class="hidden sm:flex items-center space-x-2 text-sm text-gray-600">
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
-                    <span class="text-blue-600 font-semibold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                <div class="w-8 h-8 rounded-full theme-bg-light flex items-center justify-center">
+                    <span class="theme-text font-semibold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
                 </div>
                 <div class="text-right">
                     <p class="font-medium text-gray-900">{{ auth()->user()->name }}</p>

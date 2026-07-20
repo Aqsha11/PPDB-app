@@ -1,95 +1,76 @@
 <x-app-layout>
     <x-slot name="header">Berita</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, editing: null, form: { judul: '', konten: '', status: 1, published_at: '' } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'Berita']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Berita'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola berita dan artikel</p>
-            <x-primary-button @click="open = true; editing = null; form = { judul: '', konten: '', status: 1, published_at: '' }">
-                + Tambah Berita
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Berita & Artikel" description="Kelola berita, artikel, dan pengumuman yang ditampilkan di halaman publik. Publikasikan atau arsipkan konten.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15M9 11l3 3L22 4"/>
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.berita.create') }}">
+                    + Tambah Berita
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Thumbnail', 'Judul', 'Penulis', 'Tanggal', 'Status', 'Aksi']">
+            <x-table :headers="['No', 'Judul', 'Penulis', 'Tanggal', 'Status Publish', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @if($item->thumbnail)
-                                <img src="{{ Storage::url($item->thumbnail) }}" class="w-16 h-12 object-cover rounded-lg">
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-3">
+                                @if($item->thumbnail)
+                                    <img src="{{ Storage::url($item->thumbnail) }}" class="w-12 h-9 object-cover rounded-lg border border-gray-200 dark:border-slate-600">
+                                @else
+                                    <div class="w-12 h-9 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                @endif
+                                <span class="text-sm font-medium text-gray-900 dark:text-white max-w-xs truncate">{{ $item->judul }}</span>
+                            </div>
                         </td>
-                        <td class="px-4 py-3 font-medium text-gray-900 max-w-xs truncate">{{ $item->judul }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ $item->penulis ?? '-' }}</td>
-                        <td class="px-4 py-3 text-gray-500 whitespace-nowrap">{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d/m/Y') : ($item->created_at->format('d/m/Y')) }}</td>
-                        <td class="px-4 py-3">
-                            @if($item->status)
-                                <x-badge color="green">Published</x-badge>
-                            @else
-                                <x-badge color="yellow">Draft</x-badge>
-                            @endif
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400">{{ $item->penulis ?? '-' }}</td>
+                        <td class="px-5 py-3.5 text-sm text-gray-500 dark:text-slate-400 whitespace-nowrap">{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('d/m/Y') : $item->created_at->format('d/m/Y') }}</td>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.berita.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Published' : 'Draft' }}
+                                </button>
+                            </form>
                         </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <x-secondary-button @click="open = true; editing = {{ $item->id }}; form = { judul: '{{ $item->judul }}', konten: `{{ $item->konten }}`, status: {{ $item->status ? 1 : 0 }}, published_at: '{{ $item->published_at ? \Carbon\Carbon::parse($item->published_at)->format('Y-m-d') : '' }}' }">
-                                    Edit
-                                </x-secondary-button>
-                                <form action="{{ route('admin.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus berita ini?')">
-                                    @csrf @method('DELETE')
-                                    <x-danger-button type="submit">Hapus</x-danger-button>
-                                </form>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-1">
+                                <x-icon-button :href="route('admin.berita.show', $item->id)" variant="primary" title="Lihat">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.berita.edit', $item->id)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </x-icon-button>
+                                <x-icon-button :href="route('admin.berita.destroy', $item->id)" variant="danger" title="Hapus" :delete="true" />
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8">
-                            <x-empty-state title="Belum ada berita" description="Tambahkan berita atau artikel terbaru" />
+                        <td colspan="6" class="px-5 py-12">
+                            <x-empty-state title="Belum ada berita" description="Tambahkan berita atau artikel terbaru">
+                                <x-slot name="action">
+                                    <x-primary-button href="{{ route('admin.berita.create') }}">+ Tambah Berita</x-primary-button>
+                                </x-slot>
+                            </x-empty-state>
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="berita-modal" :show="open" maxWidth="2xl">
-            <form @submit.prevent="fetch(editing ? '{{ route('admin.berita.update', '') }}/' + editing : '{{ route('admin.berita.store') }}', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: new FormData($el)
-            }).then(r => { if(r.ok) window.location.reload() })" class="p-6 space-y-4" enctype="multipart/form-data">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                @if(editing) <input type="hidden" name="_method" value="PUT"> @endif
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul</label>
-                    <input type="text" name="judul" x-model="form.judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Konten</label>
-                    <textarea name="konten" x-model="form.konten" rows="8" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required></textarea>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Thumbnail</label>
-                        <input type="file" name="thumbnail" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Terbit</label>
-                        <input type="date" name="published_at" x-model="form.published_at" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="status" value="1" x-model="form.status" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <label class="text-sm font-medium text-gray-700">Publikasikan</label>
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

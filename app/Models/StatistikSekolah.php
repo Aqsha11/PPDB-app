@@ -14,6 +14,7 @@ class StatistikSekolah extends Model
         'jumlah',
         'icon',
         'urutan',
+        'is_aktif',
 
     ];
 

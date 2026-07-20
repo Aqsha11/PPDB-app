@@ -1,91 +1,65 @@
 <x-app-layout>
     <x-slot name="header">Media Sosial</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, editing: null, form: { platform: '', ikon: '', url: '', urutan: '', is_aktif: 1 } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'route' => 'admin.dashboard'], ['label' => 'Media Sosial']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Media Sosial'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola tautan media sosial</p>
-            <x-primary-button @click="open = true; editing = null; form = { platform: '', ikon: '', url: '', urutan: '', is_aktif: 1 }">
-                + Tambah Media Sosial
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Media Sosial" description="Kelola tautan media sosial sekolah. Aktifkan atau nonaktifkan, dan perbarui URL masing-masing platform.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Platform', 'Ikon', 'URL', 'Urutan', 'Status', 'Aksi']">
+            <p class="text-sm text-gray-500 dark:text-slate-400 mb-4">Nonaktifkan media sosial jika tidak ingin ditampilkan di halaman publik.</p>
+
+            <x-table :headers="['No', 'Platform', 'URL', 'Status', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 font-medium text-gray-900">{{ $item->platform }}</td>
-                        <td class="px-4 py-3 text-2xl">{{ $item->ikon ?? $item->icon ?? '-' }}</td>
-                        <td class="px-4 py-3 max-w-xs truncate">
-                            <a href="{{ $item->url }}" target="_blank" class="text-blue-600 hover:underline">{{ $item->url }}</a>
-                        </td>
-                        <td class="px-4 py-3 text-gray-600">{{ $item->urutan ?? '-' }}</td>
-                        <td class="px-4 py-3">
-                            @if($item->is_aktif ?? $item->status)
-                                <x-badge color="green">Aktif</x-badge>
-                            @else
-                                <x-badge color="red">Nonaktif</x-badge>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <x-secondary-button @click="open = true; editing = {{ $item->id }}; form = { platform: '{{ $item->platform }}', ikon: '{{ $item->ikon ?? $item->icon ?? '' }}', url: '{{ $item->url }}', urutan: '{{ $item->urutan }}', is_aktif: {{ ($item->is_aktif ?? $item->status) ? 1 : 0 }} }">
-                                    Edit
-                                </x-secondary-button>
-                                <form action="{{ route('admin.media-sosial.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus media sosial ini?')">
-                                    @csrf @method('DELETE')
-                                    <x-danger-button type="submit">Hapus</x-danger-button>
-                                </form>
+                    <tr class="border-b border-gray-100 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-5 py-3.5 text-sm text-gray-500">{{ $loop->iteration }}</td>
+                        <td class="px-5 py-3.5">
+                            <div class="flex items-center gap-3">
+                                <i class="{!! $item->icon !!} text-xl"></i>
+                                <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $item->platform }}</span>
                             </div>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.media-sosial.update', $item->id) }}" method="POST" class="flex flex-nowrap items-center gap-2">
+                                @csrf
+                                @method('PUT')
+                                <x-text-input type="url" name="url" :value="$item->url" class="min-w-0 flex-1 sm:flex-initial sm:max-w-sm" placeholder="https://example.com" required />
+                                <x-primary-button type="submit" class="!px-3 !py-1.5 text-xs shrink-0">Simpan</x-primary-button>
+                            </form>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <form action="{{ route('admin.media-sosial.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-slate-700 dark:text-slate-400' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Aktif' : 'Nonaktif' }}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-5 py-3.5">
+                            @if($item->url)
+                                <x-icon-button :href="$item->url" variant="info" title="Buka tautan">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                </x-icon-button>
+                            @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-8">
-                            <x-empty-state title="Belum ada media sosial" description="Tambahkan tautan media sosial baru" />
+                        <td colspan="5" class="px-5 py-12">
+                            <x-empty-state title="Belum ada media sosial" description="Data media sosial akan muncul setelah di-seed." />
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="media-sosial-modal" :show="open" maxWidth="lg">
-            <form @submit.prevent="fetch(editing ? '{{ route('admin.media-sosial.update', '') }}/' + editing : '{{ route('admin.media-sosial.store') }}', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json' },
-                body: JSON.stringify({ _token: '{{ csrf_token() }}', _method: editing ? 'PUT' : 'POST', platform: form.platform, ikon: form.ikon, url: form.url, urutan: form.urutan, is_aktif: form.is_aktif })
-            }).then(r => { if(r.ok) window.location.reload() })" class="p-6 space-y-4">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                @if(editing) <input type="hidden" name="_method" value="PUT"> @endif
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Platform</label>
-                    <input type="text" name="platform" x-model="form.platform" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required placeholder="Facebook, Instagram, Twitter, dll">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Ikon</label>
-                    <input type="text" name="ikon" x-model="form.ikon" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="contoh: 📷 atau fab fa-instagram">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">URL</label>
-                    <input type="url" name="url" x-model="form.url" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required placeholder="https://">
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Urutan</label>
-                        <input type="number" name="urutan" x-model="form.urutan" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    <div class="flex items-center gap-2 pt-7">
-                        <input type="checkbox" name="is_aktif" value="1" x-model="form.is_aktif" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                        <label class="text-sm font-medium text-gray-700">Aktif</label>
-                    </div>
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

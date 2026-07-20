@@ -5,50 +5,53 @@
         <x-breadcrumb :items="[
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
             ['label' => 'Roles', 'url' => route('admin.role.index')],
-            ['label' => 'Edit']
+            ['label' => 'Edit'],
         ]" />
 
+        <x-admin.module-header title="Edit Role" description="Perbarui nama role dan hak akses yang dimilikinya.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </x-slot>
+        </x-admin.module-header>
+
         <x-card>
-            <form action="{{ route('admin.role.update', $role->id) }}" method="POST" class="space-y-6">
-                @csrf @method('PUT')
+            <form action="{{ route('admin.role.update', $role->id) }}" method="POST">
+                @csrf
+                @method('PUT')
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Role</label>
-                    <input type="text" name="name" value="{{ old('name', $role->name) }}" required
-                        class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    @error('name')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
-                    <input type="hidden" name="guard_name" value="web">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-3">Permissions</label>
-                    <div class="space-y-6">
-                        @foreach($permissions as $group => $perms)
-                            <fieldset class="border border-gray-200 rounded-lg p-4">
-                                <legend class="text-sm font-semibold text-gray-900 capitalize px-2">{{ str_replace('-', ' ', $group) }}</legend>
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                                    @foreach($perms as $perm)
-                                        <label class="flex items-center cursor-pointer">
-                                            <input type="checkbox" name="permissions[]" value="{{ $perm->name }}"
-                                                @checked(in_array($perm->name, old('permissions', $role->permissions->pluck('name')->toArray())))
-                                                class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                            <span class="ml-2 text-sm text-gray-700">{{ $perm->name }}</span>
-                                        </label>
-                                    @endforeach
-                                </div>
-                            </fieldset>
-                        @endforeach
+                <div class="space-y-5">
+                    <div>
+                        <x-input-label for="name" value="* Nama Role" />
+                        <x-text-input type="text" id="name" name="name" :value="old('name', $role->name)" class="mt-1" placeholder="Masukkan nama role..." required />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Contoh: Admin, Operator, Verifikator</p>
+                        <input type="hidden" name="guard_name" value="web">
+                        <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
                     </div>
-                    @error('permissions')
-                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                    @enderror
+
+                    <div>
+                        <x-input-label value="Permissions" />
+                        <div class="mt-1 space-y-4">
+                            @foreach($permissions as $group => $perms)
+                                <fieldset class="border border-gray-200 dark:border-slate-600 rounded-lg p-4">
+                                    <legend class="text-sm font-semibold text-gray-900 dark:text-white capitalize px-2">{{ str_replace('-', ' ', $group) }}</legend>
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                                        @foreach($perms as $perm)
+                                            <label class="flex items-center cursor-pointer">
+                                                <input type="checkbox" name="permissions[]" value="{{ $perm->name }}" @checked(in_array($perm->name, old('permissions', $role->permissions->pluck('name')->toArray()))) class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                                <span class="ml-2 text-sm text-gray-700 dark:text-slate-300">{{ $perm->name }}</span>
+                                            </label>
+                                        @endforeach
+                                    </div>
+                                </fieldset>
+                            @endforeach
+                        </div>
+                        <x-input-error :messages="$errors->get('permissions')" class="mt-1.5" />
+                    </div>
                 </div>
 
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <a href="{{ route('admin.role.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Batal</a>
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Update</button>
+                <div class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100 dark:border-slate-700">
+                    <x-secondary-button href="{{ route('admin.role.index') }}">Batal</x-secondary-button>
+                    <x-primary-button type="submit">Simpan</x-primary-button>
                 </div>
             </form>
         </x-card>

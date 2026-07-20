@@ -10,7 +10,7 @@ class OrangTua extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'siswa_id',
+        'peserta_id',
         'nama_ayah',
         'nik_ayah',
         'pekerjaan_ayah',
@@ -25,8 +25,8 @@ class OrangTua extends Model
         'penghasilan' => 'decimal:2',
     ];
 
-    public function siswa(): BelongsTo
+    public function peserta(): BelongsTo
     {
-        return $this->belongsTo(Siswa::class);
+        return $this->belongsTo(Peserta::class);
     }
 }

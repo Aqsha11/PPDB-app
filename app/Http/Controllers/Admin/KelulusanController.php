@@ -6,7 +6,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\HasilSeleksi;
-
+use App\Models\Notification;
 use App\Models\Pendaftaran;
 
 use Illuminate\Http\Request;
@@ -25,7 +25,7 @@ class KelulusanController extends Controller
 
 
         $data = Pendaftaran::with(
-            'siswa'
+            ['peserta.user', 'jalurPendaftaran', 'hasilSeleksi']
         )
             ->where(
                 'status_pendaftaran',
@@ -59,11 +59,11 @@ class KelulusanController extends Controller
         $data = $request->validate([
 
 
-            'pendaftaran_id' => 'required',
+            'pendaftaran_id' => 'required|exists:pendaftarans,id',
 
             'nilai' => 'nullable',
 
-            'status' => 'required',
+            'status' => 'required|in:diterima,ditolak,cadangan',
 
             'keterangan' => 'nullable'
 
@@ -104,6 +104,18 @@ class KelulusanController extends Controller
 
 
             ]);
+
+        $pendaftaran = Pendaftaran::with('peserta')->find($data['pendaftaran_id']);
+        if ($pendaftaran && $pendaftaran->peserta) {
+            $labels = ['diterima' => 'Diterima', 'ditolak' => 'Ditolak', 'cadangan' => 'Cadangan'];
+            $icons = ['diterima' => 'check-circle', 'ditolak' => 'x-circle', 'cadangan' => 'clock'];
+            Notification::notifyPeserta(
+                $pendaftaran->peserta,
+                'Hasil seleksi: ' . ($labels[$data['status']] ?? $data['status']),
+                '#',
+                $icons[$data['status']] ?? 'info'
+            );
+        }
 
 
 

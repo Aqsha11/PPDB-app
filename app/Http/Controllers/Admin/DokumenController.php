@@ -11,21 +11,22 @@ class DokumenController extends Controller
     public function index()
     {
         $this->authorize('dokumen.view');
-        $data = DokumenPendaftaran::with(['pendaftaran.siswa', 'persyaratanDokumen'])->latest()->paginate(20);
-        return view('admin.dokumen-siswa.index', compact('data'));
+        $data = DokumenPendaftaran::with(['pendaftaran.peserta', 'persyaratanDokumen'])->latest()->paginate(20);
+        return view('admin.dokumen-peserta.index', compact('data'));
     }
 
-    public function show(DokumenPendaftaran $dokumenSiswa)
+    public function show(DokumenPendaftaran $dokumenPeserta)
     {
         $this->authorize('dokumen.view');
-        $dokumenSiswa->load(['pendaftaran.siswa', 'persyaratanDokumen']);
-        return view('admin.dokumen-siswa.show', compact('dokumenSiswa'));
+        $dokumenPeserta->load(['pendaftaran.peserta', 'persyaratanDokumen']);
+        return view('admin.dokumen-peserta.show', compact('dokumenPeserta'));
     }
 
-    public function destroy(DokumenPendaftaran $dokumenSiswa)
+    public function destroy(DokumenPendaftaran $dokumenPeserta)
     {
         $this->authorize('dokumen.delete');
-        $dokumenSiswa->delete();
+        \Illuminate\Support\Facades\Storage::disk('public')->delete($dokumenPeserta->file);
+        $dokumenPeserta->delete();
         return back()->with('success', 'Dokumen berhasil dihapus.');
     }
 }

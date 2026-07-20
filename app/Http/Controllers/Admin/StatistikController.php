@@ -34,6 +34,25 @@ compact('data')
 
 
 
+public function create()
+{
+    $this->authorize("cms.manage");
+
+    return view("admin.statistik.create");
+}
+
+
+
+public function show(StatistikSekolah $statistik)
+{
+    $this->authorize("cms.manage");
+
+    $data = $statistik;
+
+    return view("admin.statistik.show", compact("data"));
+}
+
+
 
 public function store(Request $request)
 {
@@ -60,13 +79,41 @@ $request->validate([
 );
 
 
-
-return back();
+return redirect()->route('admin.statistik.index')->with('success', 'Statistik berhasil dibuat.');
 
 }
 
 
+public function edit(StatistikSekolah $statistik)
+{
+    $this->authorize('cms.manage');
 
+    $data = $statistik;
+
+    return view('admin.statistik.edit', compact('data'));
+}
+
+
+public function update(Request $request, StatistikSekolah $statistik)
+{
+    $this->authorize('cms.manage');
+
+    $statistik->update(
+
+        $request->validate([
+
+            'judul' => 'required',
+
+            'jumlah' => 'required',
+
+            'icon' => 'nullable'
+
+        ])
+
+    );
+
+    return redirect()->route('admin.statistik.index')->with('success', 'Statistik berhasil diperbarui.');
+}
 
 public function destroy(StatistikSekolah $statistik)
 {
@@ -78,8 +125,19 @@ $this->authorize('cms.manage');
 $statistik->delete();
 
 
-return back();
+return redirect()->route('admin.statistik.index')->with('success', 'Statistik berhasil dihapus.');
 
+
+}
+
+
+public function toggleStatus(StatistikSekolah $statistik)
+{
+    $this->authorize('cms.manage');
+
+    $statistik->update(['is_aktif' => !$statistik->is_aktif]);
+
+    return back()->with('success', 'Status berhasil diubah.');
 }
 
 

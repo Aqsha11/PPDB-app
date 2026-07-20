@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use App\Models\DaftarUlang;
-
+use App\Models\Notification;
 use App\Models\Pendaftaran;
 
 use Illuminate\Http\Request;
@@ -21,8 +21,9 @@ class DaftarUlangController extends Controller
     public function index()
     {
 
+        $this->authorize('seleksi.view');
 
-        $data = Pendaftaran::with('siswa')
+        $data = Pendaftaran::with(['peserta.user', 'jalurPendaftaran', 'daftarUlang'])
 
             ->where(
                 'status_pendaftaran',
@@ -47,10 +48,15 @@ class DaftarUlangController extends Controller
     public function update(Request $request, Pendaftaran $pendaftaran)
     {
 
-
         $this->authorize('seleksi.edit');
 
+        $data = $request->validate([
 
+            'status' => 'required|in:sudah,belum',
+
+            'catatan' => 'nullable'
+
+        ]);
 
         DaftarUlang::updateOrCreate(
 
@@ -65,7 +71,7 @@ class DaftarUlangController extends Controller
             [
 
                 'status' =>
-                $request->status,
+                $data['status'],
 
 
                 'tanggal_daftar_ulang' =>
@@ -73,14 +79,22 @@ class DaftarUlangController extends Controller
 
 
                 'catatan' =>
-                $request->catatan
+                $data['catatan']
 
             ]
 
         );
 
+        if ($pendaftaran->peserta) {
+            $label = $data['status'] == 'sudah' ? 'Sudah daftar ulang' : 'Belum daftar ulang';
+            Notification::notifyPeserta(
+                $pendaftaran->peserta,
+                'Daftar ulang: ' . $label,
+                '#',
+                $data['status'] == 'sudah' ? 'check-circle' : 'clock'
+            );
+        }
 
-
-        return back();
+        return back()->with('success', 'Daftar ulang berhasil dikonfirmasi.');
     }
 }

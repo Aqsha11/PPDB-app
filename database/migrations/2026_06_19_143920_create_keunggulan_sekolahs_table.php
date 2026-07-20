@@ -14,7 +14,7 @@ return new class extends Migration
 
             $table->string('judul');
 
-            $table->text('deskripsi');
+            $table->text('deskripsi')->nullable();
 
             $table->string('icon')
                 ->nullable();

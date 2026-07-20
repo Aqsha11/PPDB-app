@@ -1,108 +1,68 @@
 <x-app-layout>
     <x-slot name="header">Hero Banner</x-slot>
 
-    <div class="space-y-6" x-data="{ open: false, editing: null, form: { judul: '', sub_judul: '', deskripsi: '', button_text: '', button_link: '', urutan: '', status: 1 } }">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'url' => route('admin.dashboard')], ['label' => 'Hero Banner']]" />
+    <div class="space-y-6">
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Hero Banner'],
+        ]" />
 
-        <div class="flex justify-between items-center">
-            <p class="text-sm text-gray-600">Kelola banner hero halaman utama</p>
-            <x-primary-button @click="open = true; editing = null; form = { judul: '', sub_judul: '', deskripsi: '', button_text: '', button_link: '', urutan: '', status: 1 }">
-                + Tambah Hero
-            </x-primary-button>
-        </div>
+        <x-admin.module-header title="Hero Banner" description="Kelola banner utama halaman depan. Atur gambar, judul, deskripsi, dan urutan tampilan.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </x-slot>
+            <x-slot name="actions">
+                <x-primary-button href="{{ route('admin.hero.create') }}">
+                    + Tambah Hero
+                </x-primary-button>
+            </x-slot>
+        </x-admin.module-header>
 
         <x-card>
-            <x-table :headers="['Gambar', 'Judul', 'Sub Judul', 'Status', 'Aksi']">
+            <x-table :headers="['No', 'Judul', 'Sub Judul', 'Urutan', 'Status', 'Aksi']">
                 @forelse($data as $item)
-                    <tr class="border-b hover:bg-gray-50 transition">
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @if($item->gambar)
-                                <img src="{{ Storage::url($item->gambar) }}" class="w-20 h-14 object-cover rounded-lg">
-                            @else
-                                <span class="text-gray-400">-</span>
-                            @endif
+                    <tr class="hover:bg-gray-50">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $loop->iteration }}
                         </td>
-                        <td class="px-4 py-3 font-medium text-gray-900">{{ $item->judul }}</td>
-                        <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ $item->sub_judul ?? '-' }}</td>
-                        <td class="px-4 py-3">
-                            @if($item->status)
-                                <x-badge color="green">Aktif</x-badge>
-                            @else
-                                <x-badge color="red">Nonaktif</x-badge>
-                            @endif
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {{ $item->judul }}
                         </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <x-secondary-button @click="open = true; editing = {{ $item->id }}; form = { judul: '{{ $item->judul }}', sub_judul: '{{ $item->sub_judul }}', deskripsi: '{{ $item->deskripsi }}', button_text: '{{ $item->button_text }}', button_link: '{{ $item->button_link }}', urutan: '{{ $item->urutan }}', status: {{ $item->status ? 1 : 0 }} }">
-                                    Edit
-                                </x-secondary-button>
-                                <form action="{{ route('admin.hero.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus banner ini?')">
-                                    @csrf @method('DELETE')
-                                    <x-danger-button type="submit">Hapus</x-danger-button>
-                                </form>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 max-w-xs truncate">
+                            {{ $item->sub_judul ?? '-' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {{ $item->urutan }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <form action="{{ route('admin.hero.toggle-status', $item->id) }}" method="POST" class="inline">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors {{ $item->status ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200' }}">
+                                    <span class="w-1.5 h-1.5 rounded-full {{ $item->status ? 'bg-emerald-500' : 'bg-gray-400' }}"></span>
+                                    {{ $item->status ? 'Aktif' : 'Nonaktif' }}
+                                </button>
+                            </form>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <div class="flex items-center justify-end gap-1">
+                                <x-icon-button :href="route('admin.hero.edit', $item)" variant="warning" title="Ubah">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </x-icon-button>
+                                <x-icon-button :delete="true" :href="route('admin.hero.destroy', $item)" title="Hapus" />
                             </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8">
-                            <x-empty-state title="Belum ada hero banner" description="Tambahkan banner hero baru untuk halaman utama" />
+                        <td colspan="6" class="px-6 py-12 text-center">
+                            <x-empty-state title="Belum ada hero banner" description="Tambahkan banner hero baru untuk halaman utama." />
                         </td>
                     </tr>
                 @endforelse
             </x-table>
         </x-card>
-
-        <x-modal name="hero-modal" :show="open" maxWidth="2xl">
-            <form @submit.prevent="fetch(editing ? '{{ route('admin.hero.update', '') }}/' + editing : '{{ route('admin.hero.store') }}', {
-                method: 'POST',
-                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-                body: new FormData($el)
-            }).then(r => { if(r.ok) window.location.reload() })" class="p-6 space-y-4" enctype="multipart/form-data">
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                @if(editing) <input type="hidden" name="_method" value="PUT"> @endif
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Judul</label>
-                    <input type="text" name="judul" x-model="form.judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Sub Judul</label>
-                        <input type="text" name="sub_judul" x-model="form.sub_judul" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Urutan</label>
-                        <input type="number" name="urutan" x-model="form.urutan" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Deskripsi</label>
-                    <textarea name="deskripsi" x-model="form.deskripsi" rows="3" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Teks Tombol</label>
-                        <input type="text" name="button_text" x-model="form.button_text" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">URL Tombol</label>
-                        <input type="url" name="button_link" x-model="form.button_link" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Gambar</label>
-                    <input type="file" name="gambar" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="status" value="1" x-model="form.status" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                    <label class="text-sm font-medium text-gray-700">Aktif</label>
-                </div>
-                <div class="flex justify-end gap-2 pt-4 border-t border-gray-100">
-                    <x-secondary-button type="button" @click="open = false">Batal</x-secondary-button>
-                    <x-primary-button type="submit">Simpan</x-primary-button>
-                </div>
-            </form>
-        </x-modal>
     </div>
 </x-app-layout>

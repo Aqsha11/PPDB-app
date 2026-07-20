@@ -5,80 +5,64 @@
         <x-breadcrumb :items="[
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
             ['label' => 'Users', 'url' => route('admin.user.index')],
-            ['label' => 'Detail']
+            ['label' => 'Detail'],
         ]" />
 
+        <div class="flex items-center justify-between">
+            <x-icon-button :href="route('admin.user.index')" variant="default" title="Kembali">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            </x-icon-button>
+            <x-icon-button :href="route('admin.user.edit', $user)" variant="warning" title="Ubah">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            </x-icon-button>
+        </div>
+
         <x-card>
-            <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-                <div class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
-                    <span class="text-blue-600 font-bold text-xl">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
-                </div>
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">{{ $user->name }}</h2>
-                    <p class="text-sm text-gray-500">{{ $user->email }}</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama</label>
-                    <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->name }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                    <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->email }}</p>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Roles</label>
-                    <div class="flex flex-wrap gap-1.5 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200 min-h-[40px] items-center">
-                        @forelse($user->roles as $role)
-                            <x-badge color="blue">{{ $role->name }}</x-badge>
-                        @empty
-                            <span class="text-sm text-gray-400">-</span>
-                        @endforelse
+            <div class="p-5">
+                <div class="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100 dark:border-slate-700">
+                    <div class="w-14 h-14 rounded-full bg-blue-600 flex items-center justify-center shrink-0">
+                        <span class="text-white font-bold text-xl">{{ strtoupper(substr($user->name, 0, 1)) }}</span>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ $user->name }}</h2>
+                        <p class="text-sm text-gray-500 dark:text-slate-400">{{ $user->email }}</p>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Terdaftar Sejak</label>
-                    <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->created_at->format('d M Y H:i') }}</p>
-                </div>
-            </div>
 
-            @if($user->siswa ?? null)
-                <div class="mt-6 pt-6 border-t border-gray-100">
-                    <h3 class="text-base font-semibold text-gray-900 mb-4">Data Siswa Terkait</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">NISN</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->siswa->nisn ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->siswa->nama_lengkap ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Tempat Lahir</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->siswa->tempat_lahir ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Tanggal Lahir</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ isset($user->siswa->tanggal_lahir) ? \Carbon\Carbon::parse($user->siswa->tanggal_lahir)->format('d M Y') : '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Jenis Kelamin</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->siswa->jenis_kelamin ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1.5">Asal Sekolah</label>
-                            <p class="text-sm text-gray-900 bg-gray-50 rounded-lg px-4 py-2.5 border border-gray-200">{{ $user->siswa->asal_sekolah ?? '-' }}</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <x-input-label value="Nama" />
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600">{{ $user->name }}</p>
+                    </div>
+                    <div>
+                        <x-input-label value="Email" />
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600">{{ $user->email }}</p>
+                    </div>
+                    <div>
+                        <x-input-label value="Role" />
+                        <div class="mt-1 flex flex-wrap gap-1.5 bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600 min-h-[40px] items-center">
+                            @forelse($user->roles as $role)
+                                <x-badge color="blue">{{ $role->name }}</x-badge>
+                            @empty
+                                <span class="text-sm text-gray-400">-</span>
+                            @endforelse
                         </div>
                     </div>
+                    <div>
+                        <x-input-label value="Status" />
+                        <div class="mt-1">
+                            @if($user->is_active ?? true)
+                                <x-badge color="green">Aktif</x-badge>
+                            @else
+                                <x-badge color="red">Nonaktif</x-badge>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        <x-input-label value="Terdaftar Sejak" />
+                        <p class="mt-1 text-sm text-gray-900 dark:text-white bg-gray-50 dark:bg-slate-700 rounded-lg px-4 py-2.5 border border-gray-200 dark:border-slate-600">{{ $user->created_at->translatedFormat('d M Y H:i') }}</p>
+                    </div>
                 </div>
-            @endif
-
-            <div class="flex items-center justify-end gap-3 mt-6 pt-6 border-t border-gray-100">
-                <a href="{{ route('admin.user.edit', $user->id) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Edit User</a>
-                <a href="{{ route('admin.user.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition">Kembali</a>
             </div>
         </x-card>
     </div>

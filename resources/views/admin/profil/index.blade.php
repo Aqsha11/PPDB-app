@@ -2,98 +2,162 @@
     <x-slot name="header">Profil Sekolah</x-slot>
 
     <div class="space-y-6">
-        <x-breadcrumb :items="[['label' => 'Dashboard', 'route' => 'admin.dashboard'], ['label' => 'Profil Sekolah']]" />
+        <x-breadcrumb :items="[
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Profil Sekolah'],
+        ]" />
 
-        <x-card>
-            <form action="{{ route('admin.profil.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-                @csrf @method('PUT')
+        <x-admin.module-header title="Profil Sekolah" description="Kelola informasi profil sekolah yang ditampilkan di halaman publik.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+            </x-slot>
+        </x-admin.module-header>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Sekolah</label>
-                        <input type="text" name="nama_sekolah" value="{{ old('nama_sekolah', $data->nama_sekolah ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent" required>
-                        @error('nama_sekolah') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">NPSN</label>
-                        <input type="text" name="npsn" value="{{ old('npsn', $data->npsn ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('npsn') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Kelurahan</label>
-                        <input type="text" name="kelurahan" value="{{ old('kelurahan', $data->kelurahan ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('kelurahan') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Kecamatan</label>
-                        <input type="text" name="kecamatan" value="{{ old('kecamatan', $data->kecamatan ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('kecamatan') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Kota</label>
-                        <input type="text" name="kota" value="{{ old('kota', $data->kota ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('kota') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Provinsi</label>
-                        <input type="text" name="provinsi" value="{{ old('provinsi', $data->provinsi ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('provinsi') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Kode Pos</label>
-                        <input type="text" name="kode_pos" value="{{ old('kode_pos', $data->kode_pos ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('kode_pos') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Telepon</label>
-                        <input type="text" name="telepon" value="{{ old('telepon', $data->telepon ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('telepon') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                        <input type="email" name="email" value="{{ old('email', $data->email ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('email') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Website</label>
-                        <input type="url" name="website" value="{{ old('website', $data->website ?? '') }}" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                        @error('website') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                    </div>
-                </div>
+        <form action="{{ route('admin.profil.update') }}" method="POST" enctype="multipart/form-data">
+            @csrf @method('PUT')
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Alamat</label>
-                    <textarea name="alamat" rows="3" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('alamat', $data->alamat ?? '') }}</textarea>
-                    @error('alamat') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+            <div class="space-y-6">
+                <x-card>
+                    <x-slot name="title">Informasi Dasar</x-slot>
+                    <div class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <x-input-label for="nama_sekolah" value="* Nama Sekolah" />
+                                <input type="text" id="nama_sekolah" name="nama_sekolah" value="{{ old('nama_sekolah', $data->nama_sekolah ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama sekolah..." required />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maksimal 255 karakter</p>
+                                <x-input-error :messages="$errors->get('nama_sekolah')" class="mt-1" />
+                            </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Logo</label>
-                    @if($data->logo ?? null)
-                        <div class="mb-3">
-                            <img src="{{ Storage::url($data->logo) }}" class="w-32 h-32 object-cover rounded-lg border border-gray-200">
+                            <div>
+                                <x-input-label for="npsn" value="NPSN" />
+                                <input type="text" id="npsn" name="npsn" value="{{ old('npsn', $data->npsn ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan NPSN..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nomor Pokok Sekolah Nasional (8 digit)</p>
+                                <x-input-error :messages="$errors->get('npsn')" class="mt-1" />
+                            </div>
                         </div>
-                    @endif
-                    <input type="file" name="logo" accept="image/*" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    @error('logo') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Visi</label>
-                    <textarea name="visi" rows="4" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('visi', $data->visi ?? '') }}</textarea>
-                    @error('visi') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+                        <div>
+                                <x-input-label for="alamat" value="* Alamat" />
+                                <textarea id="alamat" name="alamat" rows="3" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan alamat lengkap sekolah..." required>{{ old('alamat', $data->alamat ?? '') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Alamat lengkap termasuk nama jalan dan nomor</p>
+                                <x-input-error :messages="$errors->get('alamat')" class="mt-1" />
+                        </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1.5">Misi</label>
-                    <textarea name="misi" rows="6" class="w-full rounded-lg border-gray-200 bg-white px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ old('misi', $data->misi ?? '') }}</textarea>
-                    @error('misi') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <x-input-label for="kelurahan" value="Kelurahan" />
+                                <input type="text" id="kelurahan" name="kelurahan" value="{{ old('kelurahan', $data->kelurahan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kelurahan..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kelurahan/desa</p>
+                                <x-input-error :messages="$errors->get('kelurahan')" class="mt-1" />
+                            </div>
 
-                <div class="flex justify-end pt-4 border-t border-gray-100">
+                            <div>
+                                <x-input-label for="kecamatan" value="Kecamatan" />
+                                <input type="text" id="kecamatan" name="kecamatan" value="{{ old('kecamatan', $data->kecamatan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kecamatan..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kecamatan</p>
+                                <x-input-error :messages="$errors->get('kecamatan')" class="mt-1" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="kota" value="Kota" />
+                                <input type="text" id="kota" name="kota" value="{{ old('kota', $data->kota ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kota/kabupaten..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kota atau kabupaten</p>
+                                <x-input-error :messages="$errors->get('kota')" class="mt-1" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <div>
+                                <x-input-label for="provinsi" value="Provinsi" />
+                                <input type="text" id="provinsi" name="provinsi" value="{{ old('provinsi', $data->provinsi ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama provinsi..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama provinsi</p>
+                                <x-input-error :messages="$errors->get('provinsi')" class="mt-1" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="kode_pos" value="Kode Pos" />
+                                <input type="text" id="kode_pos" name="kode_pos" value="{{ old('kode_pos', $data->kode_pos ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan kode pos..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">5 digit angka</p>
+                                <x-input-error :messages="$errors->get('kode_pos')" class="mt-1" />
+                            </div>
+
+                            <div>
+                                <x-input-label for="foto_sekolah" value="Foto Sekolah" />
+                                @if($data->foto_sekolah ?? null)
+                                    <x-image-cropper name="foto_sekolah" id="foto_sekolah" preview="{{ Storage::url($data->foto_sekolah) }}" />
+                                @else
+                                    <x-image-cropper name="foto_sekolah" id="foto_sekolah" />
+                                @endif
+                                <p class="mt-1 text-xs text-gray-400">Foto bangunan atau lingkungan sekolah</p>
+                                <x-input-error :messages="$errors->get('foto_sekolah')" class="mt-1" />
+                            </div>
+                        </div>
+                    </div>
+                </x-card>
+
+                <x-card>
+                    <x-slot name="title">Kontak</x-slot>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div>
+                                <x-input-label for="telepon" value="Telepon" />
+                                <input type="text" id="telepon" name="telepon" value="{{ old('telepon', $data->telepon ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nomor telepon..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Contoh: (0411) 123456</p>
+                                <x-input-error :messages="$errors->get('telepon')" class="mt-1" />
+                        </div>
+
+                        <div>
+                                <x-input-label for="email" value="Email" />
+                                <input type="email" id="email" name="email" value="{{ old('email', $data->email ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan email sekolah..." />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: nama@domain.com</p>
+                                <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                        </div>
+
+                        <div>
+                                <x-input-label for="whatsapp" value="WhatsApp" />
+                                <input type="text" id="whatsapp" name="whatsapp" value="{{ old('whatsapp', $data->whatsapp ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="6281234567890" />
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: 628xxxxxxxxxx (kode negara + nomor)</p>
+                                <x-input-error :messages="$errors->get('whatsapp')" class="mt-1" />
+                        </div>
+
+                        <div class="md:col-span-3">
+                                <x-input-label for="google_maps" value="Google Maps" />
+                                <textarea id="google_maps" name="google_maps" rows="3" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Tempel kode iframe Google Maps atau URL embed...">{{ old('google_maps', $data->google_maps ?? '') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Tempel kode iframe `<iframe>` dari Google Maps atau URL embed</p>
+                                <x-input-error :messages="$errors->get('google_maps')" class="mt-1" />
+                        </div>
+                    </div>
+                </x-card>
+
+                <x-card>
+                    <x-slot name="title">Deskripsi & Visi Misi</x-slot>
+                    <div class="space-y-5">
+                        <div>
+                                <x-input-label for="deskripsi" value="* Deskripsi Sekolah" />
+                                <textarea id="deskripsi" name="deskripsi" rows="4" maxlength="255" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan deskripsi singkat sekolah..." required>{{ old('deskripsi', $data->deskripsi ?? '') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maksimal 255 karakter</p>
+                            <x-input-error :messages="$errors->get('deskripsi')" class="mt-1" />
+                        </div>
+
+                        <div>
+                                <x-input-label for="visi" value="Visi" />
+                                <textarea id="visi" name="visi" rows="4" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan visi sekolah...">{{ old('visi', $data->visi ?? '') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Visi jangka panjang sekolah</p>
+                                <x-input-error :messages="$errors->get('visi')" class="mt-1" />
+                        </div>
+
+                        <div>
+                                <x-input-label for="misi" value="Misi" />
+                                <textarea id="misi" name="misi" rows="6" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan misi sekolah...">{{ old('misi', $data->misi ?? '') }}</textarea>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Rencana aksi untuk mencapai visi</p>
+                                <x-input-error :messages="$errors->get('misi')" class="mt-1" />
+                        </div>
+                    </div>
+                </x-card>
+
+                <div class="flex items-center justify-end">
                     <x-primary-button type="submit">Simpan</x-primary-button>
                 </div>
-            </form>
-        </x-card>
+            </div>
+        </form>
     </div>
 </x-app-layout>

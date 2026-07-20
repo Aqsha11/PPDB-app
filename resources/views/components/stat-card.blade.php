@@ -1,71 +1,28 @@
-@props(['title', 'value', 'icon' => null, 'color' => 'blue', 'trend' => null, 'trendValue' => null])
+@props(['title', 'value', 'icon' => null, 'color' => 'blue'])
 
 @php
     $colors = [
-        'blue' => 'bg-blue-500',
-        'green' => 'bg-emerald-500',
-        'yellow' => 'bg-yellow-500',
-        'red' => 'bg-red-500',
-        'indigo' => 'bg-indigo-500',
-        'purple' => 'bg-purple-500',
-        'pink' => 'bg-pink-500',
-        'teal' => 'bg-teal-500',
+        'blue' => ['bg' => 'theme-bg-light', 'icon' => 'theme-text', 'border' => 'border-[var(--color-primary)]/20'],
+        'green' => ['bg' => 'bg-emerald-50', 'icon' => 'text-emerald-600', 'border' => 'border-emerald-200'],
+        'yellow' => ['bg' => 'bg-amber-50', 'icon' => 'text-amber-600', 'border' => 'border-amber-200'],
+        'red' => ['bg' => 'bg-red-50', 'icon' => 'text-red-600', 'border' => 'border-red-200'],
+        'indigo' => ['bg' => 'bg-indigo-50', 'icon' => 'text-indigo-600', 'border' => 'border-indigo-200'],
+        'purple' => ['bg' => 'bg-purple-50', 'icon' => 'text-purple-600', 'border' => 'border-purple-200'],
+        'pink' => ['bg' => 'bg-pink-50', 'icon' => 'text-pink-600', 'border' => 'border-pink-200'],
+        'teal' => ['bg' => 'bg-teal-50', 'icon' => 'text-teal-600', 'border' => 'border-teal-200'],
     ];
-    $bgColors = [
-        'blue' => 'bg-blue-50',
-        'green' => 'bg-emerald-50',
-        'yellow' => 'bg-yellow-50',
-        'red' => 'bg-red-50',
-        'indigo' => 'bg-indigo-50',
-        'purple' => 'bg-purple-50',
-        'pink' => 'bg-pink-50',
-        'teal' => 'bg-teal-50',
-    ];
-    $iconColors = [
-        'blue' => 'text-blue-600',
-        'green' => 'text-emerald-600',
-        'yellow' => 'text-yellow-600',
-        'red' => 'text-red-600',
-        'indigo' => 'text-indigo-600',
-        'purple' => 'text-purple-600',
-        'pink' => 'text-pink-600',
-        'teal' => 'text-teal-600',
-    ];
-    $dot = $colors[$color] ?? $colors['blue'];
-    $bg = $bgColors[$color] ?? $bgColors['blue'];
-    $iconColor = $iconColors[$color] ?? $iconColors['blue'];
+    $c = $colors[$color] ?? $colors['blue'];
 @endphp
 
-<div {{ $attributes->merge(['class' => 'bg-white rounded-xl shadow-sm border border-gray-200 p-6']) }}>
-    <div class="flex items-center justify-between">
+<div {{ $attributes->merge(['class' => 'bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700/50 p-5 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-slate-900/20 transition-all duration-300 group-hover:-translate-y-0.5']) }}>
+    <div class="flex items-start justify-between">
         <div class="flex-1 min-w-0">
-            <p class="text-sm font-medium text-gray-500">{{ $title }}</p>
-            <p class="mt-1 text-2xl font-bold text-gray-900">{{ $value }}</p>
-            @if($trend)
-                <div class="flex items-center mt-1">
-                    @if($trend === 'up')
-                        <svg class="w-4 h-4 text-green-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                        </svg>
-                        <span class="text-xs font-medium text-green-600">{{ $trendValue ?? '' }}</span>
-                    @elseif($trend === 'down')
-                        <svg class="w-4 h-4 text-red-500 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                        </svg>
-                        <span class="text-xs font-medium text-red-600">{{ $trendValue ?? '' }}</span>
-                    @else
-                        <span class="text-xs font-medium text-gray-500">{{ $trendValue ?? '' }}</span>
-                    @endif
-                </div>
-            @endif
+            <p class="text-[11px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">{{ $title }}</p>
+            <p class="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white">{{ $value }}</p>
         </div>
         @if($icon)
-            <div class="w-12 h-12 {{ $bg }} rounded-xl flex items-center justify-center shrink-0 ml-4">
+            <div class="w-11 h-11 {{ $c['bg'] }} rounded-xl flex items-center justify-center shrink-0 ml-3 transition-transform group-hover:scale-110">
                 {!! $icon !!}
-            </div>
-        @else
-            <div class="w-12 h-12 {{ $bg }} rounded-xl flex items-center justify-center shrink-0 ml-4">
-                <div class="w-3 h-3 rounded-full {{ $dot }}"></div>
             </div>
         @endif
     </div>

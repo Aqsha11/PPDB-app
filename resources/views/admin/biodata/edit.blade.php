@@ -1,75 +1,88 @@
 <x-app-layout>
-    <x-slot name="header">Edit Biodata Siswa</x-slot>
+    <x-slot name="header">Edit Biodata Peserta</x-slot>
 
-    <div class="mb-6 space-y-4">
+    <div class="space-y-6">
         <x-breadcrumb :items="[
-            ['label' => 'Home', 'url' => route('admin.dashboard')],
-            ['label' => 'Biodata Siswa', 'url' => route('admin.biodata.index')],
+            ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
+            ['label' => 'Biodata Peserta', 'url' => route('admin.biodata.index')],
             ['label' => 'Edit'],
         ]" />
+
+        <x-admin.module-header title="Edit Biodata Peserta" description="Perbarui data biodata peserta yang sudah terdaftar.">
+            <x-slot name="icon">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            </x-slot>
+        </x-admin.module-header>
+
+        <x-card>
+            <form action="{{ route('admin.biodata.update', $peserta) }}" method="POST">
+                @csrf
+                @method('PUT')
+
+                <div class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <x-input-label for="nama_lengkap" value="Nama Lengkap" />
+                            <x-text-input type="text" id="nama_lengkap" name="nama_lengkap" :value="old('nama_lengkap', $peserta->nama_lengkap)" class="mt-1" required />
+                            <x-input-error :messages="$errors->get('nama_lengkap')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="nisn" value="NISN" />
+                            <x-text-input type="text" id="nisn" name="nisn" :value="old('nisn', $peserta->nisn)" class="mt-1" maxlength="10" />
+                            <x-input-error :messages="$errors->get('nisn')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="nik" value="NIK" />
+                            <x-text-input type="text" id="nik" name="nik" :value="old('nik', $peserta->nik)" class="mt-1" maxlength="16" />
+                            <x-input-error :messages="$errors->get('nik')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="no_hp" value="No HP" />
+                            <x-text-input type="text" id="no_hp" name="no_hp" :value="old('no_hp', $peserta->no_hp)" class="mt-1" />
+                            <x-input-error :messages="$errors->get('no_hp')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="tempat_lahir" value="Tempat Lahir" />
+                            <x-text-input type="text" id="tempat_lahir" name="tempat_lahir" :value="old('tempat_lahir', $peserta->tempat_lahir)" class="mt-1" />
+                            <x-input-error :messages="$errors->get('tempat_lahir')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="tanggal_lahir" value="Tanggal Lahir" />
+                            <x-text-input type="date" id="tanggal_lahir" name="tanggal_lahir" :value="old('tanggal_lahir', $peserta->tanggal_lahir?->format('Y-m-d'))" class="mt-1" />
+                            <x-input-error :messages="$errors->get('tanggal_lahir')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="jenis_kelamin" value="Jenis Kelamin" />
+                            <select id="jenis_kelamin" name="jenis_kelamin" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors">
+                                <option value="">-- Pilih --</option>
+                                <option value="L" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                <option value="P" {{ old('jenis_kelamin', $peserta->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
+                            </select>
+                            <x-input-error :messages="$errors->get('jenis_kelamin')" class="mt-1.5" />
+                        </div>
+                        <div>
+                            <x-input-label for="agama" value="Agama" />
+                            <select id="agama" name="agama" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors">
+                                <option value="">-- Pilih --</option>
+                                @foreach(['Islam', 'Kristen Protestan', 'Kristen Katolik', 'Hindu', 'Buddha', 'Konghucu'] as $agama)
+                                    <option value="{{ $agama }}" {{ old('agama', $peserta->agama) == $agama ? 'selected' : '' }}>{{ $agama }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('agama')" class="mt-1.5" />
+                        </div>
+                        <div class="md:col-span-2">
+                            <x-input-label for="alamat" value="Alamat" />
+                            <textarea id="alamat" name="alamat" rows="3" class="mt-1 block w-full rounded-lg border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors">{{ old('alamat', $peserta->alamat) }}</textarea>
+                            <x-input-error :messages="$errors->get('alamat')" class="mt-1.5" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 mt-8 pt-6 border-t border-gray-100 dark:border-slate-700">
+                    <x-secondary-button href="{{ route('admin.biodata.index') }}">Batal</x-secondary-button>
+                    <x-primary-button type="submit">Simpan</x-primary-button>
+                </div>
+            </form>
+        </x-card>
     </div>
-
-    <x-card>
-        <form action="{{ route('admin.biodata.update', $siswa->id) }}" method="POST">
-            @csrf @method('PUT')
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label for="nisn" class="block text-sm font-medium text-gray-700 mb-1">NISN</label>
-                    <input type="text" id="nisn" name="nisn" value="{{ old('nisn', $siswa->nisn) }}" maxlength="10" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                    @error('nisn') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="no_hp" class="block text-sm font-medium text-gray-700 mb-1">No HP</label>
-                    <input type="text" id="no_hp" name="no_hp" value="{{ old('no_hp', $siswa->no_hp) }}" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                    @error('no_hp') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="tempat_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tempat Lahir</label>
-                    <input type="text" id="tempat_lahir" name="tempat_lahir" value="{{ old('tempat_lahir', $siswa->tempat_lahir) }}" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                    @error('tempat_lahir') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="tanggal_lahir" class="block text-sm font-medium text-gray-700 mb-1">Tanggal Lahir</label>
-                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir', $siswa->tanggal_lahir?->format('Y-m-d')) }}" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                    @error('tanggal_lahir') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="jenis_kelamin" class="block text-sm font-medium text-gray-700 mb-1">Jenis Kelamin</label>
-                    <select id="jenis_kelamin" name="jenis_kelamin" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                        <option value="">-- Pilih --</option>
-                        <option value="L" {{ old('jenis_kelamin', $siswa->jenis_kelamin) == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                        <option value="P" {{ old('jenis_kelamin', $siswa->jenis_kelamin) == 'P' ? 'selected' : '' }}>Perempuan</option>
-                    </select>
-                    @error('jenis_kelamin') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div>
-                    <label for="agama" class="block text-sm font-medium text-gray-700 mb-1">Agama</label>
-                    <select id="agama" name="agama" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">
-                        <option value="">-- Pilih --</option>
-                        @foreach(['Islam', 'Kristen Protestan', 'Kristen Katolik', 'Hindu', 'Buddha', 'Konghucu'] as $agama)
-                            <option value="{{ $agama }}" {{ old('agama', $siswa->agama) == $agama ? 'selected' : '' }}>{{ $agama }}</option>
-                        @endforeach
-                    </select>
-                    @error('agama') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-
-                <div class="md:col-span-2">
-                    <label for="alamat" class="block text-sm font-medium text-gray-700 mb-1">Alamat</label>
-                    <textarea id="alamat" name="alamat" rows="3" class="w-full rounded-lg border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent px-4 py-2.5 text-sm">{{ old('alamat', $siswa->alamat) }}</textarea>
-                    @error('alamat') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
-                </div>
-            </div>
-
-            <div class="flex items-center gap-3 mt-6 pt-6 border-t border-gray-100">
-                <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">Simpan</button>
-                <a href="{{ route('admin.biodata.index') }}" class="inline-flex items-center px-6 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">Batal</a>
-            </div>
-        </form>
-    </x-card>
 </x-app-layout>

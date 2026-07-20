@@ -30,4 +30,24 @@ class TahunAjaran extends Model
     {
         return $query->where('status_aktif', true);
     }
+
+    public function getTahunAwalAttribute()
+    {
+        return explode('/', $this->nama)[0] ?? null;
+    }
+
+    public function getTahunAkhirAttribute()
+    {
+        return explode('/', $this->nama)[1] ?? null;
+    }
+
+    public function getIsAktifAttribute()
+    {
+        return $this->status_aktif;
+    }
+
+    public function periode()
+    {
+        return $this->periodePpdbs();
+    }
 }

@@ -31,6 +31,59 @@ class JadwalController extends Controller
 
 
 
+    public function create()
+    {
+
+        $this->authorize('cms.manage');
+
+
+        return view(
+            'admin.jadwal.create'
+        );
+    }
+
+
+
+
+
+    public function show(JadwalPpdb $jadwal)
+    {
+
+        $this->authorize('cms.manage');
+
+
+        $data = $jadwal;
+
+
+        return view(
+            'admin.jadwal.show',
+            compact('data')
+        );
+    }
+
+
+
+
+
+    public function edit(JadwalPpdb $jadwal)
+    {
+
+        $this->authorize('cms.manage');
+
+
+        $data = $jadwal;
+
+
+        return view(
+            'admin.jadwal.edit',
+            compact('data')
+        );
+    }
+
+
+
+
+
     public function store(Request $request)
     {
 
@@ -56,7 +109,7 @@ class JadwalController extends Controller
         );
 
 
-        return back();
+        return back()->with('success', 'Jadwal berhasil dibuat.');
     }
 
 
@@ -79,7 +132,9 @@ class JadwalController extends Controller
 
                 'tanggal_selesai' => 'required',
 
-                'deskripsi' => 'nullable'
+                'deskripsi' => 'nullable',
+
+                'urutan' => 'nullable'
 
             ])
 
@@ -87,7 +142,7 @@ class JadwalController extends Controller
 
 
 
-        return back();
+        return back()->with('success', 'Jadwal berhasil diperbarui.');
     }
 
 
@@ -99,10 +154,10 @@ class JadwalController extends Controller
 
         $this->authorize('cms.manage');
 
-
         $jadwal->delete();
 
 
-        return back();
+
+        return back()->with('success', 'Jadwal berhasil dihapus.');
     }
 }

@@ -10,45 +10,17 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        $users = [
+        $user = User::updateOrCreate(
+            ['email' => 'superadmin@ppdb.test'],
             [
                 'name' => 'Super Admin',
-                'email' => 'superadmin@ppdb.test',
-                'roles' => ['Super Admin', 'Admin'],
-            ],
-            [
-                'name' => 'Admin PPDB',
-                'email' => 'admin@ppdb.test',
-                'roles' => ['Admin'],
-            ],
-            [
-                'name' => 'Operator',
-                'email' => 'operator@ppdb.test',
-                'roles' => ['Operator'],
-            ],
-            [
-                'name' => 'Verifikator',
-                'email' => 'verifikator@ppdb.test',
-                'roles' => ['Verifikator'],
-            ],
-            [
-                'name' => 'Siswa Test',
-                'email' => 'siswa@ppdb.test',
-                'roles' => ['Siswa'],
-            ],
-        ];
-
-        foreach ($users as $data) {
-            $user = User::create([
-                'name' => $data['name'],
-                'email' => $data['email'],
                 'password' => Hash::make('password'),
                 'is_active' => true,
                 'email_verified_at' => now(),
-            ]);
-            $user->assignRole($data['roles']);
-        }
+            ]
+        );
+        $user->syncRoles(['Super Admin', 'Admin']);
 
-        $this->command->info('Admin and test users created successfully.');
+        $this->command->info('Super Admin created successfully.');
     }
 }

@@ -57,19 +57,24 @@ class TahunAjaranController extends Controller
 
 
         $request->validate([
-
-            'nama' => 'required|unique:tahun_ajarans',
-
+            'tahun_awal' => 'required|digits:4',
+            'tahun_akhir' => 'required|digits:4',
+        ], [
+            'tahun_awal.required' => 'Tahun awal wajib diisi.',
+            'tahun_awal.digits' => 'Tahun awal harus 4 digit.',
+            'tahun_akhir.required' => 'Tahun akhir wajib diisi.',
+            'tahun_akhir.digits' => 'Tahun akhir harus 4 digit.',
         ]);
 
+        $nama = $request->tahun_awal . '/' . $request->tahun_akhir;
 
+        if (TahunAjaran::where('nama', $nama)->exists()) {
+            return back()->withInput()->withErrors(['tahun_awal' => 'Tahun ajaran "' . $nama . '" sudah ada.']);
+        }
 
         TahunAjaran::create([
-
-            'nama' => $request->nama,
-
-            'status_aktif' => $request->status_aktif ?? false
-
+            'nama' => $nama,
+            'status_aktif' => $request->boolean('is_aktif')
         ]);
 
 
@@ -83,6 +88,25 @@ class TahunAjaranController extends Controller
     }
 
 
+
+
+
+
+    public function show(TahunAjaran $tahun_ajaran)
+    {
+
+
+        $this->authorize('tahun-ajaran.view');
+
+
+        $data = $tahun_ajaran;
+
+
+        return view(
+            'admin.tahun-ajaran.show',
+            compact('data')
+        );
+    }
 
 
 
@@ -117,19 +141,24 @@ class TahunAjaranController extends Controller
 
 
         $request->validate([
-
-            'nama' => 'required|unique:tahun_ajarans,nama,' . $tahun_ajaran->id
-
+            'tahun_awal' => 'required|digits:4',
+            'tahun_akhir' => 'required|digits:4',
+        ], [
+            'tahun_awal.required' => 'Tahun awal wajib diisi.',
+            'tahun_awal.digits' => 'Tahun awal harus 4 digit.',
+            'tahun_akhir.required' => 'Tahun akhir wajib diisi.',
+            'tahun_akhir.digits' => 'Tahun akhir harus 4 digit.',
         ]);
 
+        $nama = $request->tahun_awal . '/' . $request->tahun_akhir;
 
+        if (TahunAjaran::where('nama', $nama)->where('id', '!=', $tahun_ajaran->id)->exists()) {
+            return back()->withInput()->withErrors(['tahun_awal' => 'Tahun ajaran "' . $nama . '" sudah ada.']);
+        }
 
         $tahun_ajaran->update([
-
-            'nama' => $request->nama,
-
-            'status_aktif' => $request->status_aktif
-
+            'nama' => $nama,
+            'status_aktif' => $request->boolean('is_aktif')
         ]);
 
 
@@ -147,6 +176,15 @@ class TahunAjaranController extends Controller
 
 
 
+
+    public function toggleStatus(TahunAjaran $tahun_ajaran)
+    {
+        $this->authorize('tahun-ajaran.edit');
+
+        $tahun_ajaran->update(['status_aktif' => !$tahun_ajaran->status_aktif]);
+
+        return back()->with('success', 'Status tahun ajaran berhasil diperbarui.');
+    }
 
     public function destroy(TahunAjaran $tahun_ajaran)
     {

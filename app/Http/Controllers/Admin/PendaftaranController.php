@@ -21,7 +21,7 @@ class PendaftaranController extends Controller
 
         $data = Pendaftaran::with([
 
-            'siswa',
+            'peserta',
 
             'jalurPendaftaran',
 
@@ -53,7 +53,7 @@ class PendaftaranController extends Controller
 
         $pendaftaran->load([
 
-            'siswa',
+            'peserta',
 
             'dokumenPendaftarans',
 

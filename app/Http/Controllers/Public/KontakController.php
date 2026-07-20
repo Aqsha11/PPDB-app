@@ -3,29 +3,30 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Kontak;
+use App\Models\ProfilSekolah;
 use App\Models\MediaSosial;
+use App\Models\PesanKontak;
 use Illuminate\Http\Request;
 
 class KontakController extends Controller
 {
     public function index()
     {
-        $data = Kontak::first();
-        $mediaSosial = MediaSosial::all();
-        return view('public.kontak.index', compact('data', 'mediaSosial'));
+        $profil = ProfilSekolah::first();
+        $mediaSosial = MediaSosial::where('status', true)->orderBy('urutan')->get();
+        return view('public.kontak.index', compact('profil', 'mediaSosial'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required',
             'email' => 'required|email',
+            'telepon' => 'nullable',
             'pesan' => 'required',
         ]);
 
-        // Simpan pesan kontak jika ada model PesanKontak atau kirim email
-        // Untuk sementara hanya redirect dengan flash message
+        PesanKontak::create($validated);
 
         return back()->with('success', 'Pesan berhasil dikirim. Kami akan menghubungi Anda segera.');
     }

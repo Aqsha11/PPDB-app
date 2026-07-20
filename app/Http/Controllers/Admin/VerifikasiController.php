@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
+use App\Models\DokumenPendaftaran;
+use App\Models\Notification;
 use App\Models\VerifikasiPendaftaran;
 
 use App\Models\Pendaftaran;
@@ -24,7 +26,8 @@ class VerifikasiController extends Controller
 
 
         $data = Pendaftaran::with([
-            'siswa',
+            'peserta.user',
+            'jalurPendaftaran',
             'dokumenPendaftarans'
         ])
             ->where(
@@ -43,10 +46,7 @@ class VerifikasiController extends Controller
 
 
 
-
-
-
-    public function update(Request $request, Pendaftaran $pendaftaran)
+    public function update(Request $request, Pendaftaran $verifikasi)
     {
 
 
@@ -57,7 +57,7 @@ class VerifikasiController extends Controller
         $request->validate([
 
 
-            'status' => 'required',
+            'status' => 'required|in:terverifikasi,ditolak',
 
             'catatan' => 'nullable'
 
@@ -68,11 +68,14 @@ class VerifikasiController extends Controller
 
 
 
+
+
+
         VerifikasiPendaftaran::updateOrCreate(
 
             [
 
-                'pendaftaran_id' => $pendaftaran->id
+                'pendaftaran_id' => $verifikasi->id
 
             ],
 
@@ -95,7 +98,7 @@ class VerifikasiController extends Controller
 
 
 
-        $pendaftaran->update([
+        $verifikasi->update([
 
 
             'status_pendaftaran' =>
@@ -108,10 +111,26 @@ class VerifikasiController extends Controller
 
                 :
 
-                'draft'
+                'ditolak'
 
 
         ]);
+
+        $docStatus = $request->status == 'terverifikasi' ? 'terverifikasi' : 'revisi';
+        DokumenPendaftaran::where('pendaftaran_id', $verifikasi->id)->update([
+            'status' => $docStatus,
+            'verified_at' => $request->status == 'terverifikasi' ? now() : null,
+        ]);
+
+        if ($verifikasi->peserta) {
+            $statusLabel = $request->status == 'terverifikasi' ? 'Terverifikasi' : 'Ditolak';
+            Notification::notifyPeserta(
+                $verifikasi->peserta,
+                'Verifikasi pendaftaran: ' . $statusLabel,
+                '#',
+                $request->status == 'terverifikasi' ? 'check-circle' : 'x-circle'
+            );
+        }
 
 
 

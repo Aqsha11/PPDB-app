@@ -42,8 +42,8 @@ class RoleSeeder extends Seeder
 
 
 
-        $siswa = Role::firstOrCreate([
-            'name'=>'Siswa'
+        $peserta = Role::firstOrCreate([
+            'name'=>'Peserta'
         ]);
 
 
@@ -81,10 +81,24 @@ class RoleSeeder extends Seeder
             'pendaftaran.view',
             'pendaftaran.verify',
 
+            'dokumen.view',
+
             'cms.manage',
 
             'laporan.view',
             'laporan.export',
+
+            'user.view',
+            'user.create',
+            'user.edit',
+            'user.delete',
+
+            'role.view',
+            'role.edit',
+
+            'peserta.view',
+            'peserta.edit',
+            'peserta.delete',
 
         ]);
 
@@ -104,6 +118,8 @@ class RoleSeeder extends Seeder
             'berita.view',
             'berita.create',
             'berita.edit',
+
+            'peserta.view',
 
         ]);
 
@@ -129,9 +145,9 @@ class RoleSeeder extends Seeder
 
 
 
-        // Siswa
+        // Peserta
 
-        $siswa->syncPermissions([
+        $peserta->syncPermissions([
 
             'dashboard.view'
 
