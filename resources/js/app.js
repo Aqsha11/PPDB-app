@@ -432,6 +432,95 @@ document.addEventListener('alpine:init', () => {
             this.open = false;
         }
     }));
+
+    Alpine.data('formValidation', () => ({
+        fields: {},
+
+        init() {
+            const form = this.$el;
+            if (!form || form.tagName !== 'FORM') return;
+
+            form.querySelectorAll('input, textarea, select').forEach(el => {
+                const name = el.name;
+                if (!name || el.type === 'hidden' || el.type === 'file' || el.type === 'submit') return;
+
+                this.fields[name] = { el, error: '', touched: false };
+
+                el.addEventListener('blur', () => {
+                    this.fields[name].touched = true;
+                    this.validateField(name);
+                });
+
+                el.addEventListener('input', () => {
+                    if (this.fields[name].touched) this.validateField(name);
+                    this.updateCharCount(el);
+                });
+
+                if (el.hasAttribute('maxlength')) this.addCharCount(el);
+            });
+
+            form.addEventListener('submit', (e) => {
+                let valid = true;
+                Object.keys(this.fields).forEach(name => {
+                    this.fields[name].touched = true;
+                    if (!this.validateField(name)) valid = false;
+                });
+                if (!valid) {
+                    e.preventDefault();
+                    const first = form.querySelector('.border-red-500');
+                    if (first) first.focus();
+                }
+            });
+        },
+
+        validateField(name) {
+            const f = this.fields[name];
+            if (!f) return true;
+            const el = f.el;
+            let msg = '';
+
+            if (el.hasAttribute('required') && !el.value.trim()) {
+                msg = 'Wajib diisi.';
+            } else if (el.value && el.hasAttribute('maxlength')) {
+                const max = parseInt(el.getAttribute('maxlength'));
+                if (el.value.length > max) msg = `Maks ${max} karakter.`;
+            } else if (el.value && el.hasAttribute('minlength')) {
+                const min = parseInt(el.getAttribute('minlength'));
+                if (el.value.length < min) msg = `Minimal ${min} karakter.`;
+            } else if (el.type === 'email' && el.value) {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value)) msg = 'Email tidak valid.';
+            }
+
+            f.error = msg;
+            el.classList.toggle('border-red-500', !!msg);
+            el.classList.toggle('dark:border-red-500', !!msg);
+            if (!msg) {
+                el.classList.add('border-gray-300', 'dark:border-slate-600');
+                el.classList.remove('border-gray-200');
+            }
+            return !msg;
+        },
+
+        updateCharCount(el) {
+            const max = parseInt(el.getAttribute('maxlength'));
+            if (!max) return;
+            const ct = el.parentNode?.querySelector('.char-count');
+            if (!ct) return;
+            const len = el.value.length;
+            ct.textContent = `${len}/${max}`;
+            ct.classList.toggle('text-red-500', len >= max);
+            ct.classList.toggle('text-gray-400', len < max);
+        },
+
+        addCharCount(el) {
+            const max = parseInt(el.getAttribute('maxlength'));
+            if (!max || el.parentNode.querySelector('.char-count')) return;
+            const ct = document.createElement('span');
+            ct.className = 'char-count text-[10px] text-gray-400 dark:text-slate-500 float-right mt-0.5';
+            ct.textContent = `0/${max}`;
+            el.parentNode.appendChild(ct);
+        },
+    }));
 });
 
 Alpine.start();

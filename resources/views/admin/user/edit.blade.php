@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.user.update', $user->id) }}" method="POST">
+            <form action="{{ route('admin.user.update', $user->id) }}" method="POST" x-data="formValidation()">
                 @csrf
                 @method('PUT')
 
@@ -23,7 +23,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <x-input-label for="name" value="* Nama" />
-                            <x-text-input type="text" id="name" name="name" :value="old('name', $user->name)" class="mt-1" placeholder="Masukkan nama lengkap..." required />
+                            <x-text-input type="text" id="name" name="name" :value="old('name', $user->name)" class="mt-1" placeholder="Masukkan nama lengkap..." required maxlength="255" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama lengkap pengguna</p>
                             <x-input-error :messages="$errors->get('name')" class="mt-1.5" />
                         </div>
@@ -35,13 +35,13 @@
                         </div>
                         <div>
                             <x-input-label for="password" value="Password (kosongkan jika tidak diubah)" />
-                            <x-text-input type="password" id="password" name="password" class="mt-1" placeholder="Masukkan password baru..." />
+                            <x-text-input type="password" id="password" name="password" class="mt-1" placeholder="Masukkan password baru..." maxlength="255" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Kosongkan jika tidak ingin mengubah password</p>
                             <x-input-error :messages="$errors->get('password')" class="mt-1.5" />
                         </div>
                         <div>
                             <x-input-label for="password_confirmation" value="Konfirmasi Password" />
-                            <x-text-input type="password" id="password_confirmation" name="password_confirmation" class="mt-1" placeholder="Ulangi password baru..." />
+                            <x-text-input type="password" id="password_confirmation" name="password_confirmation" class="mt-1" placeholder="Ulangi password baru..." maxlength="255" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Masukkan ulang password yang sama</p>
                         </div>
                     </div>

@@ -15,13 +15,13 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.pengumuman.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.pengumuman.store') }}" method="POST" enctype="multipart/form-data" x-data="formValidation()">
                 @csrf
 
                 <div class="space-y-5">
                     <div>
                         <x-input-label for="judul" value="* Judul" />
-                        <x-text-input type="text" id="judul" name="judul" :value="old('judul')" class="mt-1" placeholder="Masukkan judul pengumuman..." required />
+                        <x-text-input type="text" id="judul" name="judul" :value="old('judul')" class="mt-1" placeholder="Masukkan judul pengumuman..." required maxlength="255" />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maksimal 255 karakter</p>
                         <x-input-error :messages="$errors->get('judul')" class="mt-1.5" />
                     </div>

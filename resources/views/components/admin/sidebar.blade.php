@@ -14,6 +14,7 @@
                 ['label' => 'Seleksi', 'route' => 'admin.kelulusan.index', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />'],
                 ['label' => 'Daftar Ulang', 'route' => 'admin.daftar-ulang.index', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-6 9l2 2 4-4" />'],
                 ['label' => 'Laporan', 'route' => 'admin.laporan.index', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />'],
+                ['label' => 'Chat Peserta', 'route' => 'admin.chat.index', 'icon' => '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />', 'badge' => 'chat'],
             ],
         ],
         [
@@ -76,7 +77,9 @@
 @endphp
 
 <aside class="fixed inset-y-0 left-0 z-50 flex flex-col overflow-hidden transition-all duration-300 ease-in-out bg-white dark:bg-slate-800 border-r border-gray-100 dark:border-slate-700/50"
-       :style="(desktop ? 'width: ' + (collapsed ? '80px' : '256px') : 'width: 256px') + '; transform: ' + (desktop ? 'translateX(0)' : (mobileOpen ? 'translateX(0)' : 'translateX(-100%)'))">
+       :style="(desktop ? 'width: ' + (collapsed ? '80px' : '256px') : 'width: 256px') + '; transform: ' + (desktop ? 'translateX(0)' : (mobileOpen ? 'translateX(0)' : 'translateX(-100%)'))"
+       x-data="{ chatUnread: 0 }"
+       x-init="setInterval(async () => { try { const r = await fetch('{{ route('admin.chat.unread-count') }}', { headers: { 'Accept': 'application/json' } }); const d = await r.json(); chatUnread = d.count; } catch(e) {} }, 15000); (async () => { try { const r = await fetch('{{ route('admin.chat.unread-count') }}', { headers: { 'Accept': 'application/json' } }); const d = await r.json(); chatUnread = d.count; } catch(e) {} })()">
 
     {{-- Logo & School Name --}}
     <div class="flex items-center h-16 px-4 shrink-0" :class="collapsed ? 'justify-center' : 'justify-between'">
@@ -120,6 +123,9 @@
                                     {!! $item['icon'] !!}
                                 </svg>
                                 <span x-show="!collapsed" class="truncate">{{ $item['label'] }}</span>
+                                @if(($item['badge'] ?? '') === 'chat')
+                                    <span x-show="chatUnread > 0 && !collapsed" x-text="chatUnread > 9 ? '9+' : chatUnread" class="ml-auto shrink-0 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                                @endif
                                 <span class="sr-only" x-show="collapsed">{{ $item['label'] }}</span>
                             </a>
                         @else
@@ -131,6 +137,9 @@
                                     {!! $item['icon'] !!}
                                 </svg>
                                 <span x-show="!collapsed" class="truncate">{{ $item['label'] }}</span>
+                                @if(($item['badge'] ?? '') === 'chat')
+                                    <span x-show="chatUnread > 0 && !collapsed" x-text="chatUnread > 9 ? '9+' : chatUnread" class="ml-auto shrink-0 w-5 h-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center"></span>
+                                @endif
                                 <span class="sr-only" x-show="collapsed">{{ $item['label'] }}</span>
                             </a>
                         @endif

@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.tahapan.store') }}" method="POST">
+            <form action="{{ route('admin.tahapan.store') }}" method="POST" x-data="formValidation()">
                 @csrf
 
                 <div class="space-y-5">

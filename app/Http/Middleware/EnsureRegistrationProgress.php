@@ -28,6 +28,11 @@ class EnsureRegistrationProgress
         'peserta.profil.index',
         'peserta.profil.update',
         'peserta.profil.password',
+        'peserta.chat.index',
+        'peserta.chat.send',
+        'peserta.chat.mark-read',
+        'peserta.chat.unread-count',
+        'peserta.chat.escalate',
     ];
 
     public function handle(Request $request, Closure $next): Response

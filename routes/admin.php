@@ -36,6 +36,7 @@ use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\NotificationController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\ChatController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -118,6 +119,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:Su
     // Laporan
     Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
+
+    // Chat
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{conversation}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{conversation}/reply', [ChatController::class, 'reply'])->name('chat.reply');
+    Route::post('/chat/{conversation}/close', [ChatController::class, 'close'])->name('chat.close');
+    Route::post('/chat/{conversation}/reopen', [ChatController::class, 'reopen'])->name('chat.reopen');
+    Route::post('/chat/{conversation}/toggle-bot', [ChatController::class, 'toggleBot'])->name('chat.toggle-bot');
+    Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])->name('chat.unread-count');
 
     // Notifications
     Route::prefix('notifikasi')->name('notifikasi.')->group(function () {

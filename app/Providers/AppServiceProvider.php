@@ -22,9 +22,13 @@ class AppServiceProvider extends ServiceProvider
         Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID.UTF-8');
 
-        $profil = ProfilSekolah::first();
-        if ($profil) {
-            Config::set('mail.from.name', $profil->nama_sekolah ?? config('mail.from.name'));
+        try {
+            $profil = ProfilSekolah::first();
+            if ($profil) {
+                Config::set('mail.from.name', $profil->nama_sekolah ?? config('mail.from.name'));
+            }
+        } catch (\Exception $e) {
+            // Table may not exist during tests or migrations
         }
 
         Blade::directive('date', function (string $expression) {

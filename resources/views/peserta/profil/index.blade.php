@@ -38,19 +38,19 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('peserta.profil.update') }}">
+                    <form method="POST" action="{{ route('peserta.profil.update') }}" x-data="formValidation()">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="name" value="Nama Lengkap" />
-                                <x-text-input id="name" name="name" type="text" class="mt-1.5 block w-full" :value="old('name', $user->name)" placeholder="Masukkan nama lengkap" required />
+                                <x-text-input id="name" name="name" type="text" class="mt-1.5 block w-full" :value="old('name', $user->name)" placeholder="Masukkan nama lengkap" required maxlength="255" />
                                 <x-input-error :messages="$errors->get('name')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="email" value="Email" />
-                                <x-text-input id="email" name="email" type="email" class="mt-1.5 block w-full" :value="old('email', $user->email)" placeholder="nama@email.com" required />
+                                <x-text-input id="email" name="email" type="email" class="mt-1.5 block w-full" :value="old('email', $user->email)" placeholder="nama@email.com" required maxlength="255" />
                                 <x-input-error :messages="$errors->get('email')" class="mt-1" />
                             </div>
                         </div>
@@ -81,19 +81,19 @@
                         </div>
                     </div>
 
-                    <form method="POST" action="{{ route('peserta.profil.password') }}">
+                    <form method="POST" action="{{ route('peserta.profil.password') }}" x-data="formValidation()">
                         @csrf
                         @method('PUT')
 
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="current_password" value="Password Saat Ini" />
-                                <x-text-input id="current_password" name="current_password" type="password" class="mt-1.5 block w-full" placeholder="Masukkan password saat ini" required />
+                                <x-text-input id="current_password" name="current_password" type="password" class="mt-1.5 block w-full" placeholder="Masukkan password saat ini" required maxlength="255" />
                                 <x-input-error :messages="$errors->get('current_password')" class="mt-1" />
                             </div>
                             <div x-data="passwordValidator()">
                                 <x-input-label for="password" value="Password Baru" />
-                                <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" x-model="password" placeholder="Masukkan password baru" required />
+                                <x-text-input id="password" name="password" type="password" class="mt-1.5 block w-full" x-model="password" placeholder="Masukkan password baru" required minlength="8" maxlength="255" />
                                 <div class="mt-2 space-y-1.5">
                                     <div class="flex items-center gap-2 text-xs" :class="length ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-slate-500'">
                                         <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path x-show="length" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/><circle x-show="!length" cx="12" cy="12" r="9" stroke-width="2"/></svg>
@@ -122,7 +122,7 @@
                             </div>
                             <div>
                                 <x-input-label for="password_confirmation" value="Konfirmasi Password Baru" />
-                                <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1.5 block w-full" placeholder="Ulangi password baru" required />
+                                <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="mt-1.5 block w-full" placeholder="Ulangi password baru" required maxlength="255" />
                             </div>
                         </div>
 

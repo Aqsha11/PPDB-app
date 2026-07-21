@@ -15,20 +15,20 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.berita.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.berita.store') }}" method="POST" enctype="multipart/form-data" x-data="formValidation()">
                 @csrf
 
                 <div class="space-y-5">
                     <div>
                         <x-input-label for="judul" value="* Judul" />
-                        <x-text-input type="text" id="judul" name="judul" :value="old('judul')" class="mt-1" placeholder="Masukkan judul berita..." required />
+                        <x-text-input type="text" id="judul" name="judul" :value="old('judul')" class="mt-1" placeholder="Masukkan judul berita..." required maxlength="255" />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maksimal 255 karakter</p>
                         <x-input-error :messages="$errors->get('judul')" class="mt-1.5" />
                     </div>
 
                     <div>
                         <x-input-label for="penulis" value="Penulis" />
-                        <x-text-input type="text" id="penulis" name="penulis" :value="old('penulis')" class="mt-1" placeholder="Masukkan nama penulis..." />
+                        <x-text-input type="text" id="penulis" name="penulis" :value="old('penulis')" class="mt-1" placeholder="Masukkan nama penulis..." maxlength="255" />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama penulis berita (opsional)</p>
                         <x-input-error :messages="$errors->get('penulis')" class="mt-1.5" />
                     </div>

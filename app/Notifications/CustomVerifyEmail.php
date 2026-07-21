@@ -25,6 +25,7 @@ class CustomVerifyEmail extends Notification
         $profil = ProfilSekolah::first();
         $namaSekolah = $profil->nama_sekolah ?? config('app.name', 'PPDB');
         $emailSekolah = config('mail.from.address');
+        $namaUser = $notifiable->name ?? $notifiable->email;
 
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
@@ -38,8 +39,8 @@ class CustomVerifyEmail extends Notification
         return (new MailMessage)
             ->subject('Verifikasi Alamat Email - ' . $namaSekolah)
             ->from($emailSekolah, $namaSekolah)
-            ->line('Selamat datang di ' . $namaSekolah . '!')
-            ->line('Silakan klik tombol di bawah untuk memverifikasi alamat email Anda.')
+            ->line('Halo, ' . $namaUser . '!')
+            ->line('Selamat datang di ' . $namaSekolah . '. Silakan klik tombol di bawah untuk memverifikasi alamat email Anda.')
             ->action('Verifikasi Email', $verificationUrl)
             ->line('Jika Anda tidak membuat akun ini, abaikan email ini.');
     }

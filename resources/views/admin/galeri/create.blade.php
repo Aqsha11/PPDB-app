@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data" x-data="formValidation()">
                 @csrf
 
                 <div class="space-y-5">

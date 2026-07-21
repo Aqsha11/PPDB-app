@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.tahapan.update', $data->id) }}" method="POST">
+            <form action="{{ route('admin.tahapan.update', $data->id) }}" method="POST" x-data="formValidation()">
                 @csrf
                 @method('PUT')
 

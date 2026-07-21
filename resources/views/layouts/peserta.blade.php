@@ -100,6 +100,7 @@
             </footer>
         </div>
     </div>
+    <x-peserta.chat-widget />
     @stack('scripts')
 </body>
 </html>

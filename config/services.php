@@ -35,4 +35,15 @@ return [
         ],
     ],
 
+    'gemini' => [
+        'api_key' => env('GEMINI_API_KEY', ''),
+        'model' => env('GEMINI_MODEL', 'gemini-2.0-flash'),
+    ],
+
+    'chat' => [
+        'jam_mulai' => (int) env('CHAT_JAM_MULAI', 8),
+        'jam_selesai' => (int) env('CHAT_JAM_SELESAI', 17),
+        'timezone' => env('CHAT_TIMEZONE', 'Asia/Makassar'),
+    ],
+
 ];

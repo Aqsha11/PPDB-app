@@ -5,7 +5,7 @@
 @section('content')
     <div class="animate-fade-in">
         <x-card>
-            <form method="POST" action="{{ route('peserta.biodata.update') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('peserta.biodata.update') }}" enctype="multipart/form-data" x-data="formValidation()">
                 @csrf
                 @method('PUT')
 
@@ -58,24 +58,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2">
                                 <x-input-label for="nama_lengkap" value="Nama Lengkap" />
-                                <x-text-input id="nama_lengkap" name="nama_lengkap" type="text" class="mt-1.5 block w-full" :value="old('nama_lengkap', $peserta->nama_lengkap)" placeholder="Masukkan nama lengkap" required />
+                                <x-text-input id="nama_lengkap" name="nama_lengkap" type="text" class="mt-1.5 block w-full" :value="old('nama_lengkap', $peserta->nama_lengkap)" placeholder="Masukkan nama lengkap" required maxlength="255" />
                                 <x-input-error :messages="$errors->get('nama_lengkap')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="nisn" value="NISN" />
-                                <x-text-input id="nisn" name="nisn" type="text" class="mt-1.5 block w-full" :value="old('nisn', $peserta->nisn)" placeholder="Masukkan 10 digit NISN" required />
-                                <p class="mt-1 text-xs text-gray-400 dark:text-slate-500">Minimal 10 karakter, angka saja</p>
+                                <x-text-input id="nisn" name="nisn" type="text" class="mt-1.5 block w-full" :value="old('nisn', $peserta->nisn)" placeholder="Masukkan 10 digit NISN" maxlength="10" minlength="10" pattern="[0-9]{10}" data-pattern-error="NISN harus 10 digit angka." required />
                                 <x-input-error :messages="$errors->get('nisn')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="nik" value="NIK" />
-                                <x-text-input id="nik" name="nik" type="text" class="mt-1.5 block w-full" :value="old('nik', $peserta->nik)" placeholder="Masukkan 16 digit NIK" maxlength="16" />
-                                <p class="mt-1 text-xs text-gray-400 dark:text-slate-500">16 karakter, angka saja</p>
+                                <x-text-input id="nik" name="nik" type="text" class="mt-1.5 block w-full" :value="old('nik', $peserta->nik)" placeholder="Masukkan 16 digit NIK" maxlength="16" minlength="16" pattern="[0-9]{16}" data-pattern-error="NIK harus 16 digit angka." />
                                 <x-input-error :messages="$errors->get('nik')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="tempat_lahir" value="Tempat Lahir" />
-                                <x-text-input id="tempat_lahir" name="tempat_lahir" type="text" class="mt-1.5 block w-full" :value="old('tempat_lahir', $peserta->tempat_lahir)" placeholder="Contoh: Makassar" required />
+                                <x-text-input id="tempat_lahir" name="tempat_lahir" type="text" class="mt-1.5 block w-full" :value="old('tempat_lahir', $peserta->tempat_lahir)" placeholder="Contoh: Makassar" maxlength="255" />
                                 <x-input-error :messages="$errors->get('tempat_lahir')" class="mt-1" />
                             </div>
                             <div>
@@ -94,12 +92,12 @@
                             </div>
                             <div>
                                 <x-input-label for="agama" value="Agama" />
-                                <x-text-input id="agama" name="agama" type="text" class="mt-1.5 block w-full" :value="old('agama', $peserta->agama)" placeholder="Contoh: Islam" />
+                                <x-text-input id="agama" name="agama" type="text" class="mt-1.5 block w-full" :value="old('agama', $peserta->agama)" placeholder="Contoh: Islam" maxlength="100" />
                                 <x-input-error :messages="$errors->get('agama')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="no_hp" value="No. Handphone" />
-                                <x-text-input id="no_hp" name="no_hp" type="text" class="mt-1.5 block w-full" :value="old('no_hp', $peserta->no_hp)" placeholder="Contoh: 081234567890" required />
+                                <x-text-input id="no_hp" name="no_hp" type="text" class="mt-1.5 block w-full" :value="old('no_hp', $peserta->no_hp)" placeholder="Contoh: 081234567890" maxlength="20" pattern="[0-9]*" data-pattern-error="Nomor HP hanya boleh angka." />
                                 <x-input-error :messages="$errors->get('no_hp')" class="mt-1" />
                             </div>
                         </div>
@@ -118,32 +116,32 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2">
                                 <x-input-label for="alamat" value="Alamat Lengkap" />
-                                <textarea id="alamat" name="alamat" rows="3" class="mt-1.5 block w-full border-gray-300 dark:border-slate-600 dark:bg-slate-800 focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] rounded-xl" placeholder="Masukkan alamat lengkap" required>{{ old('alamat', $peserta->alamat) }}</textarea>
+                                <textarea id="alamat" name="alamat" rows="3" maxlength="1000" class="mt-1.5 block w-full border-gray-300 dark:border-slate-600 dark:bg-slate-800 focus:border-[var(--color-primary)] focus:ring-[var(--color-primary)] rounded-xl" placeholder="Masukkan alamat lengkap">{{ old('alamat', $peserta->alamat) }}</textarea>
                                 <x-input-error :messages="$errors->get('alamat')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="provinsi" value="Provinsi" />
-                                <x-text-input id="provinsi" name="provinsi" type="text" class="mt-1.5 block w-full" :value="old('provinsi', $peserta->provinsi)" placeholder="Contoh: Sulawesi Selatan" />
+                                <x-text-input id="provinsi" name="provinsi" type="text" class="mt-1.5 block w-full" :value="old('provinsi', $peserta->provinsi)" placeholder="Contoh: Sulawesi Selatan" maxlength="100" />
                                 <x-input-error :messages="$errors->get('provinsi')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="kabupaten" value="Kabupaten/Kota" />
-                                <x-text-input id="kabupaten" name="kabupaten" type="text" class="mt-1.5 block w-full" :value="old('kabupaten', $peserta->kabupaten)" placeholder="Contoh: Makassar" />
+                                <x-text-input id="kabupaten" name="kabupaten" type="text" class="mt-1.5 block w-full" :value="old('kabupaten', $peserta->kabupaten)" placeholder="Contoh: Makassar" maxlength="100" />
                                 <x-input-error :messages="$errors->get('kabupaten')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="kecamatan" value="Kecamatan" />
-                                <x-text-input id="kecamatan" name="kecamatan" type="text" class="mt-1.5 block w-full" :value="old('kecamatan', $peserta->kecamatan)" placeholder="Contoh: Tamalanrea" />
+                                <x-text-input id="kecamatan" name="kecamatan" type="text" class="mt-1.5 block w-full" :value="old('kecamatan', $peserta->kecamatan)" placeholder="Contoh: Tamalanrea" maxlength="100" />
                                 <x-input-error :messages="$errors->get('kecamatan')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="kelurahan" value="Kelurahan/Desa" />
-                                <x-text-input id="kelurahan" name="kelurahan" type="text" class="mt-1.5 block w-full" :value="old('kelurahan', $peserta->kelurahan)" placeholder="Contoh: Buntara" />
+                                <x-text-input id="kelurahan" name="kelurahan" type="text" class="mt-1.5 block w-full" :value="old('kelurahan', $peserta->kelurahan)" placeholder="Contoh: Buntara" maxlength="100" />
                                 <x-input-error :messages="$errors->get('kelurahan')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="kode_pos" value="Kode Pos" />
-                                <x-text-input id="kode_pos" name="kode_pos" type="text" class="mt-1.5 block w-full" :value="old('kode_pos', $peserta->kode_pos)" placeholder="Contoh: 90231" maxlength="5" />
+                                <x-text-input id="kode_pos" name="kode_pos" type="text" class="mt-1.5 block w-full" :value="old('kode_pos', $peserta->kode_pos)" placeholder="Contoh: 90231" maxlength="5" minlength="5" pattern="[0-9]{5}" data-pattern-error="Kode pos harus 5 digit angka." />
                                 <x-input-error :messages="$errors->get('kode_pos')" class="mt-1" />
                             </div>
                         </div>

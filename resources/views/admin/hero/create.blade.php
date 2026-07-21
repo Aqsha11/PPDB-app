@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.hero.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5">
+            <form action="{{ route('admin.hero.store') }}" method="POST" enctype="multipart/form-data" class="space-y-5" x-data="formValidation()">
                 @csrf
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">

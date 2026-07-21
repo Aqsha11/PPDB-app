@@ -15,13 +15,13 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.faq.store') }}" method="POST">
+            <form action="{{ route('admin.faq.store') }}" method="POST" x-data="formValidation()">
                 @csrf
 
                 <div class="space-y-5">
                     <div>
                         <x-input-label for="pertanyaan" value="* Pertanyaan" />
-                        <x-text-input type="text" id="pertanyaan" name="pertanyaan" :value="old('pertanyaan')" class="mt-1" placeholder="Masukkan pertanyaan yang sering diajukan..." required />
+                        <x-text-input type="text" id="pertanyaan" name="pertanyaan" :value="old('pertanyaan')" class="mt-1" placeholder="Masukkan pertanyaan yang sering diajukan..." required maxlength="255" />
                         <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Pertanyaan yang sering diajukan oleh peserta/orang tua</p>
                         <x-input-error :messages="$errors->get('pertanyaan')" class="mt-1.5" />
                     </div>

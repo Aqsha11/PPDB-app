@@ -11,6 +11,7 @@ use App\Http\Controllers\Peserta\DaftarUlangController;
 use App\Http\Controllers\Peserta\PengumumanController;
 use App\Http\Controllers\Peserta\PendaftaranSayaController;
 use App\Http\Controllers\Peserta\ProfilController;
+use App\Http\Controllers\Peserta\ChatController;
 use App\Http\Controllers\Admin\NotificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -54,6 +55,13 @@ Route::prefix('peserta')->name('peserta.')->middleware(['auth', 'verified', 'rol
     Route::get('/profil', [ProfilController::class, 'index'])->name('profil.index');
     Route::put('/profil', [ProfilController::class, 'update'])->name('profil.update');
     Route::put('/profil/password', [ProfilController::class, 'password'])->name('profil.password');
+
+    // Chat
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
+    Route::post('/chat/mark-read', [ChatController::class, 'markRead'])->name('chat.mark-read');
+    Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])->name('chat.unread-count');
+    Route::post('/chat/escalate', [ChatController::class, 'escalate'])->name('chat.escalate');
 
     // Notifikasi
     Route::get('/notifikasi/api', [NotificationController::class, 'index'])->name('notifikasi.api');

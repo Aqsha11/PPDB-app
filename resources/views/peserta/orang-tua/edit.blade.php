@@ -5,7 +5,7 @@
 @section('content')
     <div class="animate-fade-in">
         <x-card>
-            <form method="POST" action="{{ route('peserta.orang-tua.update') }}">
+            <form method="POST" action="{{ route('peserta.orang-tua.update') }}" x-data="formValidation()">
                 @csrf
                 @method('PUT')
 
@@ -22,18 +22,18 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="nama_ayah" value="Nama Ayah" />
-                                <x-text-input id="nama_ayah" name="nama_ayah" type="text" class="mt-1.5 block w-full" :value="old('nama_ayah', $ortu->nama_ayah)" placeholder="Masukkan nama ayah" required />
+                                <x-text-input id="nama_ayah" name="nama_ayah" type="text" class="mt-1.5 block w-full" :value="old('nama_ayah', $ortu->nama_ayah)" placeholder="Masukkan nama ayah" maxlength="255" />
                                 <x-input-error :messages="$errors->get('nama_ayah')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="nik_ayah" value="NIK Ayah" />
-                                <x-text-input id="nik_ayah" name="nik_ayah" type="text" class="mt-1.5 block w-full" :value="old('nik_ayah', $ortu->nik_ayah)" placeholder="16 digit NIK" maxlength="20" />
+                                <x-text-input id="nik_ayah" name="nik_ayah" type="text" class="mt-1.5 block w-full" :value="old('nik_ayah', $ortu->nik_ayah)" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]{16}" data-pattern-error="NIK harus 16 digit angka." />
                                 <p class="mt-1 text-xs text-gray-400 dark:text-slate-500">16 karakter, angka saja</p>
                                 <x-input-error :messages="$errors->get('nik_ayah')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="pekerjaan_ayah" value="Pekerjaan Ayah" />
-                                <x-text-input id="pekerjaan_ayah" name="pekerjaan_ayah" type="text" class="mt-1.5 block w-full" :value="old('pekerjaan_ayah', $ortu->pekerjaan_ayah)" placeholder="Contoh: Guru" />
+                                <x-text-input id="pekerjaan_ayah" name="pekerjaan_ayah" type="text" class="mt-1.5 block w-full" :value="old('pekerjaan_ayah', $ortu->pekerjaan_ayah)" placeholder="Contoh: Guru" maxlength="255" />
                                 <x-input-error :messages="$errors->get('pekerjaan_ayah')" class="mt-1" />
                             </div>
                         </div>
@@ -51,18 +51,18 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="nama_ibu" value="Nama Ibu" />
-                                <x-text-input id="nama_ibu" name="nama_ibu" type="text" class="mt-1.5 block w-full" :value="old('nama_ibu', $ortu->nama_ibu)" placeholder="Masukkan nama ibu" required />
+                                <x-text-input id="nama_ibu" name="nama_ibu" type="text" class="mt-1.5 block w-full" :value="old('nama_ibu', $ortu->nama_ibu)" placeholder="Masukkan nama ibu" maxlength="255" />
                                 <x-input-error :messages="$errors->get('nama_ibu')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="nik_ibu" value="NIK Ibu" />
-                                <x-text-input id="nik_ibu" name="nik_ibu" type="text" class="mt-1.5 block w-full" :value="old('nik_ibu', $ortu->nik_ibu)" placeholder="16 digit NIK" maxlength="20" />
+                                <x-text-input id="nik_ibu" name="nik_ibu" type="text" class="mt-1.5 block w-full" :value="old('nik_ibu', $ortu->nik_ibu)" placeholder="16 digit NIK" maxlength="16" pattern="[0-9]{16}" data-pattern-error="NIK harus 16 digit angka." />
                                 <p class="mt-1 text-xs text-gray-400 dark:text-slate-500">16 karakter, angka saja</p>
                                 <x-input-error :messages="$errors->get('nik_ibu')" class="mt-1" />
                             </div>
                             <div>
                                 <x-input-label for="pekerjaan_ibu" value="Pekerjaan Ibu" />
-                                <x-text-input id="pekerjaan_ibu" name="pekerjaan_ibu" type="text" class="mt-1.5 block w-full" :value="old('pekerjaan_ibu', $ortu->pekerjaan_ibu)" placeholder="Contoh: Ibu Rumah Tangga" />
+                                <x-text-input id="pekerjaan_ibu" name="pekerjaan_ibu" type="text" class="mt-1.5 block w-full" :value="old('pekerjaan_ibu', $ortu->pekerjaan_ibu)" placeholder="Contoh: Ibu Rumah Tangga" maxlength="255" />
                                 <x-input-error :messages="$errors->get('pekerjaan_ibu')" class="mt-1" />
                             </div>
                         </div>
@@ -85,7 +85,7 @@
                             </div>
                             <div>
                                 <x-input-label for="no_hp" value="No. HP Orang Tua" />
-                                <x-text-input id="no_hp" name="no_hp" type="text" class="mt-1.5 block w-full" :value="old('no_hp', $ortu->no_hp)" placeholder="Contoh: 081234567890" required />
+                                <x-text-input id="no_hp" name="no_hp" type="text" class="mt-1.5 block w-full" :value="old('no_hp', $ortu->no_hp)" placeholder="Contoh: 081234567890" maxlength="20" pattern="[0-9]*" data-pattern-error="Nomor HP hanya boleh angka." />
                                 <x-input-error :messages="$errors->get('no_hp')" class="mt-1" />
                             </div>
                         </div>

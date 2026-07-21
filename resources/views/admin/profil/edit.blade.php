@@ -14,7 +14,7 @@
             </x-slot>
         </x-admin.module-header>
 
-        <form action="{{ route('admin.profil.update') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.profil.update') }}" method="POST" enctype="multipart/form-data" x-data="formValidation()">
             @csrf @method('PUT')
 
             <div class="space-y-6">
@@ -24,14 +24,14 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <x-input-label for="nama_sekolah" value="* Nama Sekolah" />
-                                <input type="text" id="nama_sekolah" name="nama_sekolah" value="{{ old('nama_sekolah', $data->nama_sekolah ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama sekolah..." required />
+                                <input type="text" id="nama_sekolah" name="nama_sekolah" value="{{ old('nama_sekolah', $data->nama_sekolah ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama sekolah..." required maxlength="255" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Maksimal 255 karakter</p>
                                 <x-input-error :messages="$errors->get('nama_sekolah')" class="mt-1" />
                             </div>
 
                             <div>
                                 <x-input-label for="npsn" value="NPSN" />
-                                <input type="text" id="npsn" name="npsn" value="{{ old('npsn', $data->npsn ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan NPSN..." />
+                                <input type="text" id="npsn" name="npsn" value="{{ old('npsn', $data->npsn ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan NPSN..." maxlength="8" pattern="[0-9]{8}" data-pattern-error="NPSN harus 8 digit angka." />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nomor Pokok Sekolah Nasional (8 digit)</p>
                                 <x-input-error :messages="$errors->get('npsn')" class="mt-1" />
                             </div>
@@ -39,7 +39,7 @@
 
                         <div>
                             <x-input-label for="alamat" value="* Alamat" />
-                            <textarea id="alamat" name="alamat" rows="3" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan alamat lengkap sekolah..." required>{{ old('alamat', $data->alamat ?? '') }}</textarea>
+                                <textarea id="alamat" name="alamat" rows="3" maxlength="1000" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan alamat lengkap sekolah..." required>{{ old('alamat', $data->alamat ?? '') }}</textarea>
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Alamat lengkap termasuk nama jalan dan nomor</p>
                             <x-input-error :messages="$errors->get('alamat')" class="mt-1" />
                         </div>
@@ -47,21 +47,21 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
                                 <x-input-label for="kelurahan" value="Kelurahan" />
-                                <input type="text" id="kelurahan" name="kelurahan" value="{{ old('kelurahan', $data->kelurahan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kelurahan..." />
+                                <input type="text" id="kelurahan" name="kelurahan" value="{{ old('kelurahan', $data->kelurahan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kelurahan..." maxlength="100" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kelurahan/desa</p>
                                 <x-input-error :messages="$errors->get('kelurahan')" class="mt-1" />
                             </div>
 
                             <div>
                                 <x-input-label for="kecamatan" value="Kecamatan" />
-                                <input type="text" id="kecamatan" name="kecamatan" value="{{ old('kecamatan', $data->kecamatan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kecamatan..." />
+                                <input type="text" id="kecamatan" name="kecamatan" value="{{ old('kecamatan', $data->kecamatan ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kecamatan..." maxlength="100" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kecamatan</p>
                                 <x-input-error :messages="$errors->get('kecamatan')" class="mt-1" />
                             </div>
 
                             <div>
                                 <x-input-label for="kota" value="Kota" />
-                                <input type="text" id="kota" name="kota" value="{{ old('kota', $data->kota ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kota/kabupaten..." />
+                                <input type="text" id="kota" name="kota" value="{{ old('kota', $data->kota ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama kota/kabupaten..." maxlength="100" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama kota atau kabupaten</p>
                                 <x-input-error :messages="$errors->get('kota')" class="mt-1" />
                             </div>
@@ -70,14 +70,14 @@
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                             <div>
                                 <x-input-label for="provinsi" value="Provinsi" />
-                                <input type="text" id="provinsi" name="provinsi" value="{{ old('provinsi', $data->provinsi ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama provinsi..." />
+                                <input type="text" id="provinsi" name="provinsi" value="{{ old('provinsi', $data->provinsi ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nama provinsi..." maxlength="100" />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Nama provinsi</p>
                                 <x-input-error :messages="$errors->get('provinsi')" class="mt-1" />
                             </div>
 
                             <div>
                                 <x-input-label for="kode_pos" value="Kode Pos" />
-                                <input type="text" id="kode_pos" name="kode_pos" value="{{ old('kode_pos', $data->kode_pos ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan kode pos..." />
+                                <input type="text" id="kode_pos" name="kode_pos" value="{{ old('kode_pos', $data->kode_pos ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan kode pos..." maxlength="5" pattern="[0-9]{5}" data-pattern-error="Kode pos harus 5 digit angka." />
                                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">5 digit angka</p>
                                 <x-input-error :messages="$errors->get('kode_pos')" class="mt-1" />
                             </div>
@@ -101,21 +101,21 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
                         <div>
                             <x-input-label for="telepon" value="Telepon" />
-                            <input type="text" id="telepon" name="telepon" value="{{ old('telepon', $data->telepon ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nomor telepon..." />
+                                <input type="text" id="telepon" name="telepon" value="{{ old('telepon', $data->telepon ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan nomor telepon..." maxlength="20" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Contoh: (0411) 123456</p>
                             <x-input-error :messages="$errors->get('telepon')" class="mt-1" />
                         </div>
 
                         <div>
                             <x-input-label for="email" value="Email" />
-                            <input type="email" id="email" name="email" value="{{ old('email', $data->email ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan email sekolah..." />
+                                <input type="email" id="email" name="email" value="{{ old('email', $data->email ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="Masukkan email sekolah..." maxlength="255" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: nama@domain.com</p>
                             <x-input-error :messages="$errors->get('email')" class="mt-1" />
                         </div>
 
                         <div>
                             <x-input-label for="whatsapp" value="WhatsApp" />
-                            <input type="text" id="whatsapp" name="whatsapp" value="{{ old('whatsapp', $data->whatsapp ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="6281234567890" />
+                                <input type="text" id="whatsapp" name="whatsapp" value="{{ old('whatsapp', $data->whatsapp ?? '') }}" class="mt-1 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20" placeholder="6281234567890" maxlength="20" />
                             <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Format: 628xxxxxxxxxx (kode negara + nomor)</p>
                             <x-input-error :messages="$errors->get('whatsapp')" class="mt-1" />
                         </div>

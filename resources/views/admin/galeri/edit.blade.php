@@ -15,7 +15,7 @@
         </x-admin.module-header>
 
         <x-card>
-            <form action="{{ route('admin.galeri.update', $data->id) }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('admin.galeri.update', $data->id) }}" method="POST" enctype="multipart/form-data" x-data="formValidation()">
                 @csrf
                 @method('PUT')
 
