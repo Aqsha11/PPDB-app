@@ -12,8 +12,9 @@ class ProfilController extends Controller
     public function index()
     {
         $user = auth()->user();
+        $peserta = $user->peserta;
 
-        return view('peserta.profil.index', compact('user'));
+        return view('peserta.profil.index', compact('user', 'peserta'));
     }
 
     public function update(Request $request)

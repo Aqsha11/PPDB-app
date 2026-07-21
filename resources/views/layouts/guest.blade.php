@@ -75,6 +75,13 @@
                 <div>
                     <div class="w-12 h-[2px] rounded-full mb-4" style="background-color: rgba(255,255,255,0.4)"></div>
                     <p class="text-xs" style="color: rgba(255,255,255,0.6)">&copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.</p>
+                    <p class="text-xs mt-1 flex items-center gap-1" style="color: rgba(255,255,255,0.4)">
+                        Powered by
+                        <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-90 transition-opacity">
+                            <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-3.5 w-auto" style="filter:brightness(10);">
+                            <span style="color:#0ea5a0">VITEKS</span>
+                        </a>
+                    </p>
                 </div>
             </div>
         </div>
@@ -104,6 +111,13 @@
                 <x-theme-toggle />
                 <p class="text-center text-xs text-gray-400 dark:text-slate-500 lg:hidden">
                     &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.
+                </p>
+                <p class="text-center text-xs text-gray-400 dark:text-slate-500 lg:hidden flex items-center justify-center gap-1">
+                    Powered by
+                    <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity">
+                        <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-3.5 w-auto">
+                        <span style="color:#0ea5a0">VITEKS</span>
+                    </a>
                 </p>
             </div>
         </div>

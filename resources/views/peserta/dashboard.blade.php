@@ -13,6 +13,7 @@
             ['label' => 'Submit', 'route' => null, 'done' => $pendaftaran && $pendaftaran->status_pendaftaran !== 'draft'],
             ['label' => 'Verifikasi', 'route' => null, 'done' => $pendaftaran && in_array($pendaftaran->status_pendaftaran, ['verifikasi', 'diterima', 'ditolak'])],
             ['label' => 'Hasil Seleksi', 'route' => null, 'done' => $pendaftaran && in_array($pendaftaran->status_pendaftaran, ['diterima', 'ditolak'])],
+            ['label' => 'Daftar Ulang', 'route' => $pendaftaran?->status_pendaftaran === 'diterima' ? 'peserta.daftar-ulang.index' : null, 'done' => $pendaftaran && $pendaftaran->daftarUlang?->status === 'sudah'],
         ];
 
         $stepRoutes = [
@@ -22,6 +23,7 @@
             4 => 'peserta.jalur.index',
             5 => 'peserta.dokumen.index',
             6 => 'peserta.dokumen.index',
+            7 => 'peserta.daftar-ulang.index',
         ];
 
         $stepLabels = [
@@ -31,6 +33,7 @@
             4 => 'Pilih Jalur',
             5 => 'Upload Dokumen',
             6 => 'Submit Pendaftaran',
+            7 => 'Daftar Ulang',
         ];
 
         $requiredCount = $pendaftaran?->jalurPendaftaran?->persyaratanDokumens?->where('is_wajib', true)?->count() ?? 0;
@@ -45,30 +48,30 @@
     @endphp
 
     @if(!$registrationComplete)
-        <div class="rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden animate-fade-in theme-bg">
+        <div class="rounded-2xl p-5 sm:p-8 text-white relative overflow-hidden animate-fade-in theme-bg">
             <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20 blur-3xl"></div>
             <div class="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full translate-y-16 -translate-x-16 blur-2xl"></div>
-            <div class="relative flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl sm:text-2xl font-extrabold">Halo, {{ $peserta?->nama_lengkap ?? auth()->user()->name }}!</h2>
-                    <p class="mt-1.5 text-sm text-white/75 max-w-md">Selamat datang di PPDB Online. Lengkapi tahapan pendaftaran Anda untuk melanjutkan.</p>
+            <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="min-w-0">
+                    <h2 class="text-lg sm:text-2xl font-extrabold truncate">Halo, {{ $peserta?->nama_lengkap ?? auth()->user()->name }}!</h2>
+                    <p class="mt-1.5 text-xs sm:text-sm text-white/75">Selamat datang di PPDB Online. Lengkapi tahapan pendaftaran Anda untuk melanjutkan.</p>
                 </div>
-                <div class="hidden sm:block text-right">
-                    <p class="text-xs font-bold text-white/60 uppercase tracking-wider">Tahap saat ini</p>
-                    <p class="text-3xl font-extrabold mt-1">{{ min($currentStep, 6) }}/6</p>
+                <div class="text-right shrink-0">
+                    <p class="text-[10px] font-bold text-white/60 uppercase tracking-wider">Tahap saat ini</p>
+                    <p class="text-2xl sm:text-3xl font-extrabold mt-0.5">{{ min($currentStep, 9) }}/9</p>
                 </div>
             </div>
 
-            @if($currentStep <= 6)
-                <div class="relative mt-5 flex items-center gap-3">
-                    <a href="{{ route($stepRoutes[$currentStep]) }}"
-                       class="inline-flex items-center gap-2 px-6 py-2.5 bg-white text-sm font-bold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5" style="color: var(--color-primary)">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            @if($currentStep <= 9)
+                <div class="relative mt-5 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                    <a href="{{ route($stepRoutes[$currentStep] ?? 'peserta.dashboard') }}"
+                       class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-sm font-bold rounded-xl hover:bg-white/90 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5" style="color: var(--color-primary)">
+                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                         </svg>
-                        Lanjutkan: {{ $stepLabels[$currentStep] }}
+                        Lanjutkan: {{ $stepLabels[$currentStep] ?? 'Selesai' }}
                     </a>
-                    <span class="text-xs font-medium text-white/60">Langkah {{ min($currentStep, 6) }} dari 6</span>
+                    <span class="text-xs font-medium text-white/60">Langkah {{ min($currentStep, 9) }} dari 9</span>
                 </div>
             @endif
         </div>
@@ -101,10 +104,12 @@
                             Upload dokumen yang diperlukan.
                         @elseif($currentStep == 6)
                             Periksa data Anda dan submit pendaftaran.
+                        @elseif($currentStep == 7)
+                            Unggah dokumen daftar ulang yang diperlukan.
                         @endif
                     </p>
-                    @if($currentStep <= 6)
-                        <a href="{{ route($stepRoutes[$currentStep]) }}"
+                    @if($currentStep <= 9)
+                        <a href="{{ route($stepRoutes[$currentStep] ?? 'peserta.dashboard') }}"
                            class="mt-6 inline-flex items-center gap-2 px-6 py-2.5 btn-theme text-sm font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
@@ -116,16 +121,16 @@
             </x-card>
         </div>
     @else
-        <div class="rounded-2xl p-6 sm:p-8 text-white relative overflow-hidden animate-fade-in" style="background: linear-gradient(135deg, #059669, #047857)">
+        <div class="rounded-2xl p-5 sm:p-8 text-white relative overflow-hidden animate-fade-in" style="background: linear-gradient(135deg, #059669, #047857)">
             <div class="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20 blur-3xl"></div>
-            <div class="relative flex items-center justify-between">
-                <div>
-                    <h2 class="text-xl sm:text-2xl font-extrabold">Halo, {{ $peserta?->nama_lengkap ?? auth()->user()->name }}!</h2>
-                    <p class="mt-1.5 text-sm text-emerald-100 max-w-md">Pendaftaran Anda telah selesai. Pantau status pendaftaran Anda di sini.</p>
+            <div class="relative flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div class="min-w-0">
+                    <h2 class="text-lg sm:text-2xl font-extrabold truncate">Halo, {{ $peserta?->nama_lengkap ?? auth()->user()->name }}!</h2>
+                    <p class="mt-1.5 text-xs sm:text-sm text-emerald-100">Pendaftaran Anda telah selesai. Pantau status pendaftaran Anda di sini.</p>
                 </div>
-                <div class="hidden sm:block">
-                    <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="shrink-0">
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
                     </div>
@@ -169,7 +174,7 @@
             <x-peserta.stat-card label="Dokumen" :value="$dokumenStatus" color="{{ $allWajibDone ? 'green' : 'yellow' }}"
                 icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>' />
 
-            <x-peserta.stat-card label="Tahapan" value="{{ min($currentStep, 8) }}/8" color="indigo"
+            <x-peserta.stat-card label="Tahapan" value="{{ min($currentStep, 9) }}/9" color="indigo"
                 icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>' />
         </div>
 

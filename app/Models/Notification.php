@@ -8,7 +8,7 @@ use Illuminate\Support\Str;
 
 class Notification extends Model
 {
-    protected $fillable = ['type', 'notifiable_type', 'notifiable_id', 'data', 'read_at'];
+    protected $fillable = ['id', 'type', 'notifiable_type', 'notifiable_id', 'data', 'read_at'];
 
     protected $casts = [
         'data' => 'array',

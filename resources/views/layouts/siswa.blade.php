@@ -102,8 +102,17 @@
             </div>
         </main>
 
-        <footer class="border-t border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-6 py-4 text-center text-sm text-gray-500 dark:text-slate-400">
-            &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.
+        <footer class="border-t border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 px-6 py-4 text-center text-xs text-gray-500 dark:text-slate-400">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.
+            </div>
+            <div class="mt-1.5 flex items-center justify-center gap-1.5">
+                <span>Powered by</span>
+                <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity">
+                    <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-4 w-auto">
+                    <span style="color:#0ea5a0">VITEKS</span>
+                </a>
+            </div>
         </footer>
     </div>
     @stack('scripts')

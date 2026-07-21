@@ -28,10 +28,11 @@ class JalurController extends Controller
             'jalur_pendaftaran_id' => 'required|exists:jalur_pendaftarans,id',
         ]);
 
-        $periode = PeriodePpdb::where('status_aktif', true)->first();
+        $periode = PeriodePpdb::with('tahunAjaran')->where('status_aktif', true)->first();
         abort_unless($periode, 403, 'Tidak ada periode PPDB aktif saat ini.');
 
         $data['periode_ppdb_id'] = $periode->id;
+        $data['tahun_ajaran_id'] = $periode->tahun_ajaran_id;
 
         $data['user_id'] = auth()->id();
         $data['peserta_id'] = $peserta->id;

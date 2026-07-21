@@ -28,11 +28,15 @@ use App\Http\Controllers\Admin\TestimoniController;
 use App\Http\Controllers\Admin\VideoController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\PermissionController;
 use App\Http\Controllers\Admin\BiodataController;
 use App\Http\Controllers\Admin\DokumenController;
 use App\Http\Controllers\Admin\BrandingController;
 use App\Http\Controllers\Admin\ThemeController;
 use App\Http\Controllers\Admin\NotificationController;
+use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\LaporanController;
+
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:Super Admin|Admin|Operator|Verifikator'])->group(function () {
@@ -52,11 +56,12 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:Su
     Route::resource('pendaftaran', PendaftaranController::class)->only('index', 'show', 'destroy');
     Route::resource('verifikasi', VerifikasiController::class)->only('index', 'update');
     Route::resource('kelulusan', KelulusanController::class)->only('index', 'store');
-    Route::resource('daftar-ulang', DaftarUlangController::class)->only('index', 'update');
+    Route::resource('daftar-ulang', DaftarUlangController::class)->only('index', 'show', 'update', 'destroy');
 
     // Manajemen Biodata & Dokumen Peserta
     Route::resource('biodata', BiodataController::class)->parameters(['biodata' => 'peserta'])->only('index', 'show', 'edit', 'update', 'destroy');
-    Route::resource('dokumen-peserta', DokumenController::class)->only('index', 'show', 'destroy');
+    Route::resource('dokumen-peserta', DokumenController::class)->only('index', 'destroy');
+    Route::get('dokumen-peserta/{dokumenPeserta}', [DokumenController::class, 'show'])->name('dokumen-peserta.show');
 
     // CMS Content
     Route::resource('berita', BeritaController::class);
@@ -82,6 +87,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:Su
 
     // Single-row settings
     Route::get('/profil-sekolah', [ProfilSekolahController::class, 'index'])->name('profil.index');
+    Route::get('/profil-sekolah/edit', [ProfilSekolahController::class, 'edit'])->name('profil.edit');
+    Route::get('/profil-sekolah/show', [ProfilSekolahController::class, 'show'])->name('profil.show');
     Route::put('/profil-sekolah', [ProfilSekolahController::class, 'update'])->name('profil.update');
     Route::get('/sambutan', [SambutanController::class, 'index'])->name('sambutan.index');
     Route::put('/sambutan', [SambutanController::class, 'update'])->name('sambutan.update');
@@ -94,12 +101,23 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:Su
     Route::get('/seo', [SeoController::class, 'index'])->name('seo.index');
     Route::put('/seo', [SeoController::class, 'update'])->name('seo.update');
 
-    // User & Role Management
+    // User & Role & Permission Management
     Route::resource('user', UserController::class);
+    Route::put('/user/{user}/toggle-status', [UserController::class, 'toggleStatus'])->name('user.toggle-status');
+    Route::put('/user/{user}/verify-email', [UserController::class, 'verifyEmail'])->name('user.verify-email');
+    Route::post('/user/{user}/send-verification', [UserController::class, 'sendVerification'])->name('user.send-verification');
     Route::resource('role', RoleController::class);
+    Route::resource('permission', PermissionController::class);
 
     // Theme
     Route::post('/theme', [ThemeController::class, 'update'])->name('theme.update');
+
+    // Search
+    Route::get('/search', SearchController::class)->name('search');
+
+    // Laporan
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export', [LaporanController::class, 'export'])->name('laporan.export');
 
     // Notifications
     Route::prefix('notifikasi')->name('notifikasi.')->group(function () {

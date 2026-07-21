@@ -6,6 +6,7 @@ use App\Models\MediaSosial;
 use App\Models\ProfilSekolah;
 use Blade;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -20,6 +21,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID.UTF-8');
+
+        $profil = ProfilSekolah::first();
+        if ($profil) {
+            Config::set('mail.from.name', $profil->nama_sekolah ?? config('mail.from.name'));
+        }
 
         Blade::directive('date', function (string $expression) {
             return "<?php echo \\Carbon\\Carbon::parse($expression)->translatedFormat('l, j F Y'); ?>";

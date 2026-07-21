@@ -9,11 +9,24 @@
             <x-breadcrumb :items="$breadcrumb ?? []" />
         </div>
         <div class="flex items-center space-x-1 sm:space-x-2">
-            <div class="hidden sm:block relative">
+            <div class="hidden sm:block relative" x-data="liveSearch()">
                 <svg class="w-4 h-4 text-gray-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                 </svg>
-                <input type="text" placeholder="Cari..." class="w-52 lg:w-64 pl-9 pr-3 py-2 text-sm border-0 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none search-focus transition-all">
+                <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="search()" @click.outside="close()" placeholder="Cari siswa, pendaftaran..." class="w-52 lg:w-64 pl-9 pr-3 py-2 text-sm border-0 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none search-focus transition-all">
+                <div x-show="open && results.length > 0" x-transition class="absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-gray-100 dark:border-slate-700 py-2 z-50 max-h-96 overflow-y-auto">
+                    <template x-for="item in results" :key="item.url">
+                        <a :href="item.url" class="flex items-start px-4 py-3 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors gap-3">
+                            <div class="w-8 h-8 rounded-xl theme-bg-light flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-4 h-4 theme-text" fill="none" stroke="currentColor" viewBox="0 0 24 24" x-html="iconFor(item.icon)"></svg>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-white truncate" x-text="item.title"></p>
+                                <p class="text-xs text-gray-500 dark:text-slate-400 truncate" x-text="item.subtitle"></p>
+                            </div>
+                        </a>
+                    </template>
+                </div>
             </div>
 
             <x-theme-switcher />

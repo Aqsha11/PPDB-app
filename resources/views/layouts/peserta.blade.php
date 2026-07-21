@@ -86,8 +86,17 @@
                 </div>
             </main>
 
-            <footer class="shrink-0 border-t border-gray-200/60 dark:border-slate-800 bg-white/60 dark:bg-slate-900/60 backdrop-blur-sm px-6 py-4 text-center text-xs text-gray-400 dark:text-slate-500">
-                &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. Hak cipta dilindungi.
+            <footer class="shrink-0 border-t border-gray-200/60 dark:border-slate-800 bg-gray-50 dark:bg-slate-900 px-6 py-4 text-center text-xs">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5">
+                    &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.
+                </div>
+                <div class="mt-1.5 flex items-center justify-center gap-1.5 text-gray-400 dark:text-slate-500">
+                    <span>Powered by</span>
+                    <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity">
+                        <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-4 w-auto">
+                        <span style="color:#0ea5a0">VITEKS</span>
+                    </a>
+                </div>
             </footer>
         </div>
     </div>

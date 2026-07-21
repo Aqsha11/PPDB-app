@@ -34,7 +34,7 @@
 
             <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf
-                <x-secondary-button class="w-full justify-center py-3">
+                <x-secondary-button type="submit" class="w-full justify-center py-3">
                     Keluar
                 </x-secondary-button>
             </form>

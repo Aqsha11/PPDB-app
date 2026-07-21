@@ -48,8 +48,16 @@
                 @endif
                 {{ $slot }}
             </main>
-            <footer class="border-t border-gray-100 dark:border-slate-700/50 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm px-6 py-3 text-center text-xs text-gray-400 dark:text-slate-500">
-                &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }} &middot; Sistem PPDB
+            <footer class="border-t border-gray-100 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-800/80 backdrop-blur-sm px-6 py-3 text-center text-xs">
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5 text-gray-400 dark:text-slate-500">
+                    &copy; {{ date('Y') }} {{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}. All rights reserved.
+                    <span class="hidden sm:inline text-gray-300 dark:text-slate-600">·</span>
+                    <span class="hidden sm:inline">Powered by</span>
+                    <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity">
+                        <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-4 w-auto">
+                        <span style="color:#0ea5a0">VITEKS</span>
+                    </a>
+                </div>
             </footer>
         </div>
     </div>

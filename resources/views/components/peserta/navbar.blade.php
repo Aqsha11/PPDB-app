@@ -18,9 +18,13 @@
         <x-theme-toggle />
         <div class="relative" x-data="{ open: false }" @click.outside="open = false">
             <button @click="open = !open" class="flex items-center space-x-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-all duration-200">
-                <div class="w-8 h-8 rounded-xl flex items-center justify-center theme-bg">
-                    <span class="text-white font-bold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
-                </div>
+                @if(auth()->user()->peserta?->pas_foto)
+                    <img src="{{ Storage::url(auth()->user()->peserta->pas_foto) }}" alt="{{ auth()->user()->name }}" class="w-8 h-8 rounded-xl object-cover shadow-sm">
+                @else
+                    <div class="w-8 h-8 rounded-xl flex items-center justify-center theme-bg">
+                        <span class="text-white font-bold text-sm">{{ substr(auth()->user()->name, 0, 1) }}</span>
+                    </div>
+                @endif
                 <svg class="w-4 h-4 text-gray-400 dark:text-slate-500 transition-transform" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>

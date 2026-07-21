@@ -123,6 +123,7 @@ class PermissionSeeder extends Seeder
             'peserta.edit',
             'peserta.delete',
 
+
         ];
 
 

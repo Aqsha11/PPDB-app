@@ -7,9 +7,13 @@
         <div class="lg:col-span-1 animate-fade-in">
             <x-card>
                 <div class="text-center py-8">
-                    <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto theme-bg">
-                        <span class="text-white font-extrabold text-2xl">{{ substr($user->name, 0, 1) }}</span>
-                    </div>
+                    @if($peserta && $peserta->pas_foto)
+                        <img src="{{ Storage::url($peserta->pas_foto) }}" alt="{{ $user->name }}" class="w-20 h-20 rounded-2xl object-cover mx-auto shadow-lg">
+                    @else
+                        <div class="w-20 h-20 rounded-2xl flex items-center justify-center mx-auto theme-bg">
+                            <span class="text-white font-extrabold text-2xl">{{ substr($user->name, 0, 1) }}</span>
+                        </div>
+                    @endif
                     <h3 class="mt-4 text-lg font-extrabold text-gray-900 dark:text-white">{{ $user->name }}</h3>
                     <p class="text-sm text-gray-500 dark:text-slate-400">{{ $user->email }}</p>
                     <div class="mt-3">

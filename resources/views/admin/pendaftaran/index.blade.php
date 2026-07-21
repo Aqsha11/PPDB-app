@@ -13,22 +13,59 @@
             @endslot
         </x-admin.module-header>
 
+        @php
+            $activeStatus = request('status', 'semua');
+            $tabs = [
+                'semua' => ['label' => 'Semua', 'color' => 'gray'],
+                'menunggu' => ['label' => 'Menunggu', 'color' => 'amber'],
+                'diterima' => ['label' => 'Diterima', 'color' => 'green'],
+                'cadangan' => ['label' => 'Cadangan', 'color' => 'blue'],
+                'ditolak' => ['label' => 'Ditolak', 'color' => 'red'],
+            ];
+        @endphp
+
+        <div class="flex flex-wrap gap-2">
+            @foreach($tabs as $key => $tab)
+                @php
+                    $isActive = $activeStatus === $key;
+                    $activeClass = $isActive
+                        ? 'bg-white dark:bg-slate-800 shadow-sm ring-2 ring-gray-200 dark:ring-slate-600 text-gray-900 dark:text-white font-bold'
+                        : 'bg-white/60 dark:bg-slate-800/60 text-gray-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-800';
+                @endphp
+                <a href="{{ route('admin.pendaftaran.index', array_merge(request()->only('search'), ['status' => $key])) }}"
+                   class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm transition-all duration-200 {{ $activeClass }}">
+                    {{ $tab['label'] }}
+                    <span class="text-xs px-1.5 py-0.5 rounded-lg {{ $isActive ? 'theme-bg-light theme-text' : 'bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400' }}">
+                        {{ $counts[$key] ?? 0 }}
+                    </span>
+                </a>
+            @endforeach
+        </div>
+
         <x-card>
-            <div class="p-4 border-b border-gray-100 dark:border-slate-700">
+            <div class="p-4 border-b border-gray-100 dark:border-slate-700" x-data="liveSearch()">
                 <form method="GET" class="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-                    <input type="text" name="search" placeholder="Cari nama peserta..." value="{{ request('search') }}"
-                        class="w-full sm:w-72 rounded-lg border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-700 px-4 py-2.5 text-sm text-gray-900 dark:text-white focus:border-blue-600 focus:ring-blue-600">
+                    @if($activeStatus !== 'semua')
+                        <input type="hidden" name="status" value="{{ $activeStatus }}">
+                    @endif
+                    <div class="relative w-full sm:w-72">
+                        <svg class="w-4 h-4 text-gray-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" name="search" placeholder="Cari nama peserta atau NISN..." value="{{ request('search') }}"
+                            class="w-full pl-9 pr-3 py-2.5 text-sm border-0 rounded-xl bg-gray-50 dark:bg-slate-700/50 text-gray-700 dark:text-slate-200 placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:focus:ring-slate-600 transition-all">
+                    </div>
                     <div class="flex items-center gap-2">
                         <x-primary-button type="submit">Cari</x-primary-button>
                         @if(request('search'))
-                            <x-secondary-button href="{{ route('admin.pendaftaran.index') }}">Reset</x-secondary-button>
+                            <x-secondary-button href="{{ route('admin.pendaftaran.index', ['status' => $activeStatus] ?? []) }}">Reset</x-secondary-button>
                         @endif
                     </div>
                 </form>
             </div>
 
             @if($data->isEmpty())
-                <x-empty-state title="Belum ada data pendaftaran" description="Belum ada pendaftar yang mendaftar melalui sistem.">
+                <x-empty-state title="Belum ada data pendaftaran" description="Tidak ditemukan pendaftaran yang sesuai filter.">
                     @slot('icon')
                         <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -39,7 +76,7 @@
                 <x-table :headers="['No', 'Nama Peserta', 'NISN', 'Jalur', 'Status', 'Aksi']">
                     @foreach($data as $row)
                         <tr class="hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
-                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500">{{ $loop->iteration }}</td>
+                            <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-500">{{ ($data->currentPage() - 1) * $data->perPage() + $loop->iteration }}</td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{ $row->peserta->nama_lengkap ?? $row->peserta->user->name ?? '-' }}</td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-slate-400">{{ $row->peserta->nisn ?? '-' }}</td>
                             <td class="px-5 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-slate-400">{{ $row->jalurPendaftaran->nama ?? '-' }}</td>
@@ -50,7 +87,7 @@
                                         'submitted' => 'blue',
                                         'verifikasi' => 'yellow',
                                         'diterima' => 'green',
-                                        'cadangan' => 'yellow',
+                                        'cadangan' => 'blue',
                                         'ditolak' => 'red',
                                         default => 'gray',
                                     };
@@ -71,6 +108,12 @@
                         </tr>
                     @endforeach
                 </x-table>
+
+                @if(method_exists($data, 'links'))
+                    <div class="px-5 py-4 border-t border-gray-100 dark:border-slate-700">
+                        {{ $data->links() }}
+                    </div>
+                @endif
             @endif
         </x-card>
 

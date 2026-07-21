@@ -13,30 +13,47 @@ class PendaftaranController extends Controller
 {
 
 
-    public function index()
+    public function index(Request $request)
     {
-
         $this->authorize('pendaftaran.view');
 
-
-        $data = Pendaftaran::with([
-
-            'peserta',
-
+        $query = Pendaftaran::with([
+            'peserta.user',
             'jalurPendaftaran',
+            'periodePpdb',
+        ]);
 
-            'periodePpdb'
+        $search = $request->input('search');
+        if ($search) {
+            $query->whereHas('peserta', function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%");
+            });
+        }
 
-        ])
-            ->latest()
-            ->get();
+        $status = $request->input('status');
+        if ($status && $status !== 'semua') {
+            $map = [
+                'menunggu' => ['submitted', 'verifikasi'],
+                'diterima' => ['diterima'],
+                'cadangan' => ['cadangan'],
+                'ditolak' => ['ditolak'],
+            ];
+            $statuses = $map[$status] ?? [$status];
+            $query->whereIn('status_pendaftaran', $statuses);
+        }
 
+        $data = $query->latest()->paginate(20)->withQueryString();
 
+        $counts = [
+            'semua' => Pendaftaran::count(),
+            'menunggu' => Pendaftaran::whereIn('status_pendaftaran', ['submitted', 'verifikasi'])->count(),
+            'diterima' => Pendaftaran::where('status_pendaftaran', 'diterima')->count(),
+            'cadangan' => Pendaftaran::where('status_pendaftaran', 'cadangan')->count(),
+            'ditolak' => Pendaftaran::where('status_pendaftaran', 'ditolak')->count(),
+        ];
 
-        return view(
-            'admin.pendaftaran.index',
-            compact('data')
-        );
+        return view('admin.pendaftaran.index', compact('data', 'counts'));
     }
 
 
@@ -52,13 +69,13 @@ class PendaftaranController extends Controller
 
 
         $pendaftaran->load([
-
-            'peserta',
-
-            'dokumenPendaftarans',
-
-            'hasilSeleksi'
-
+            'peserta.user',
+            'peserta.orangTua',
+            'peserta.sekolahAsal',
+            'jalurPendaftaran',
+            'periodePpdb',
+            'dokumenPendaftarans.persyaratanDokumen',
+            'hasilSeleksi',
         ]);
 
 

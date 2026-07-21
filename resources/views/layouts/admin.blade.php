@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{ sidebarOpen: false }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="sidebar()">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,9 +10,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="font-sans antialiased bg-gray-50">
+    <script>window.adminSearchUrl = '{{ route("admin.search") }}';</script>
     <div class="flex h-screen overflow-hidden">
         <x-admin.sidebar />
-        <div class="flex flex-1 flex-col overflow-y-auto lg:ml-64">
+        <div x-show="mobileOpen" x-transition.opacity @click="mobileOpen = false" class="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden"></div>
+        <div class="flex flex-1 flex-col overflow-y-auto min-w-0 transition-all duration-300" :style="desktop ? 'margin-left: ' + (collapsed ? '80px' : '256px') : 'margin-left: 0'">
             <x-admin.navbar />
             <main class="flex-1 p-4 sm:p-6 lg:p-8">
                 @if(session('success'))
@@ -34,8 +36,16 @@
                 @endisset
                 {{ $slot }}
             </main>
-            <footer class="border-t bg-white px-6 py-4 text-center text-sm text-gray-500">
-                &copy; {{ date('Y') }} {{ config('app.name', 'PPDB') }}. All rights reserved.
+            <footer class="border-t bg-gray-50 px-6 py-4 text-center text-xs">
+                <div class="flex items-center justify-center gap-1.5 text-gray-500">
+                    &copy; {{ date('Y') }} {{ config('app.name', 'PPDB') }}. All rights reserved.
+                    <span class="text-gray-300">·</span>
+                    <span>Powered by</span>
+                    <a href="https://viteks.id/" target="_blank" rel="noopener" class="inline-flex items-center gap-1 font-semibold hover:opacity-80 transition-opacity">
+                        <img src="https://viteks.id/storage/site/J5MNxOhayYQO9ENI3oFOxy0fQd50ll84bFpyFshl.png" alt="Viteks" class="h-4 w-auto">
+                        <span style="color:#0ea5a0">VITEKS</span>
+                    </a>
+                </div>
             </footer>
         </div>
     </div>

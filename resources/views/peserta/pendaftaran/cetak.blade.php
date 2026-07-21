@@ -41,10 +41,16 @@
     <div class="card">
         <div class="header">
             @if(isset($profil) && $profil?->logo)
-                <img src="{{ Storage::url($profil->logo) }}" alt="Logo" style="height: 60px; margin: 0 auto 12px;">
+                <img src="{{ Storage::url($profil->logo) }}" alt="Logo" style="height: 70px; margin: 0 auto 12px;">
             @endif
             <h1>{{ $profil->nama_sekolah ?? config('app.name', 'PPDB') }}</h1>
-            <p>{{ $profil->alamat ?? '' }}</p>
+            @if($profil?->npsn)
+                <p style="font-size: 12px; color: #6b7280; margin-top: 2px;">NPSN: {{ $profil->npsn }}</p>
+            @endif
+            <p>{{ $profil->alamat ?? '' }}{{ $profil->kabupaten ? ', ' . $profil->kabupaten : '' }}{{ $profil->provinsi ? ', ' . $profil->provinsi : '' }}</p>
+            @if($profil?->no_telp)
+                <p style="font-size: 12px; color: #6b7280; margin-top: 2px;">Telp: {{ $profil->no_telp }}</p>
+            @endif
         </div>
 
         <div class="title">Bukti Pendaftaran PPDB</div>
@@ -83,7 +89,7 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Tahun Ajaran</span>
-                    <span class="info-value">: {{ $pendaftaran->periodePpdb?->tahunAjaran?->tahun ?? '-' }}</span>
+                    <span class="info-value">: {{ $pendaftaran->periodePpdb?->tahunAjaran?->nama ?? '-' }}</span>
                 </div>
                 <div class="info-item">
                     <span class="info-label">Status</span>
@@ -91,12 +97,12 @@
                 </div>
                 <div class="info-item">
                     <span class="info-label">Tanggal Daftar</span>
-                    <span class="info-value">: {{ $pendaftaran->created_at?->format('d/m/Y H:i') ?? '-' }}</span>
+                    <span class="info-value">: {{ $pendaftaran->created_at?->setTimezone('Asia/Makassar')->format('d/m/Y H:i') ?? '-' }} WITA</span>
                 </div>
                 @if($pendaftaran->tanggal_submit)
                     <div class="info-item">
                         <span class="info-label">Tanggal Submit</span>
-                        <span class="info-value">: {{ $pendaftaran->tanggal_submit?->format('d/m/Y H:i') }}</span>
+                        <span class="info-value">: {{ $pendaftaran->tanggal_submit?->setTimezone('Asia/Makassar')->format('d/m/Y H:i') }} WITA</span>
                     </div>
                 @endif
             </div>

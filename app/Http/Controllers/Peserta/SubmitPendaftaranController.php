@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Peserta;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
+use App\Models\ProfilSekolah;
 use Illuminate\Http\Request;
 
 class SubmitPendaftaranController extends Controller
@@ -25,7 +26,10 @@ class SubmitPendaftaranController extends Controller
             'plus-circle'
         );
 
-        return redirect()->route('peserta.dashboard')
-            ->with('success', 'Pendaftaran berhasil dikirim. Silakan tunggu verifikasi.');
+        $pendaftaran->load(['jalurPendaftaran', 'peserta']);
+
+        $profil = ProfilSekolah::first();
+
+        return view('peserta.pendaftaran.success', compact('pendaftaran', 'profil'));
     }
 }

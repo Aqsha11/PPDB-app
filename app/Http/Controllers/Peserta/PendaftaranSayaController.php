@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Peserta;
 
 use App\Http\Controllers\Controller;
+use App\Models\ProfilSekolah;
 
 class PendaftaranSayaController extends Controller
 {
@@ -29,6 +30,8 @@ class PendaftaranSayaController extends Controller
             return redirect()->route('peserta.dashboard')->with('error', 'Belum ada pendaftaran.');
         }
 
-        return view('peserta.pendaftaran.cetak', compact('peserta', 'pendaftaran'));
+        $profil = ProfilSekolah::first();
+
+        return view('peserta.pendaftaran.cetak', compact('peserta', 'pendaftaran', 'profil'));
     }
 }

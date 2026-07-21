@@ -84,6 +84,34 @@ class UserController extends Controller
         return redirect()->route('admin.user.index')->with('success', 'User berhasil diupdate.');
     }
 
+    public function toggleStatus(User $user)
+    {
+        $this->authorize('user.edit');
+        $user->update(['is_active' => !$user->is_active]);
+        $status = $user->is_active ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "User berhasil {$status}.");
+    }
+
+    public function verifyEmail(User $user)
+    {
+        $this->authorize('user.edit');
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('warning', 'Email pengguna sudah terverifikasi.');
+        }
+        $user->markEmailAsVerified();
+        return back()->with('success', 'Email pengguna berhasil diverifikasi.');
+    }
+
+    public function sendVerification(User $user)
+    {
+        $this->authorize('user.edit');
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('warning', 'Email pengguna sudah terverifikasi.');
+        }
+        $user->sendEmailVerificationNotification();
+        return back()->with('success', 'Email verifikasi telah dikirim ulang.');
+    }
+
     public function destroy(User $user)
     {
         $this->authorize('user.delete');

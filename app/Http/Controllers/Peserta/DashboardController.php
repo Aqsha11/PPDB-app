@@ -9,7 +9,7 @@ class DashboardController extends Controller
     public function index()
     {
         $peserta = auth()->user()->peserta;
-        $pendaftaran = $peserta?->pendaftaran()->with(['jalurPendaftaran', 'periodePpdb.tahunAjaran'])->first();
+        $pendaftaran = $peserta?->pendaftaran()->with(['jalurPendaftaran', 'periodePpdb.tahunAjaran', 'daftarUlang'])->first();
         $dokumen = $pendaftaran?->dokumenPendaftarans ?? collect();
 
         $currentStep = $this->resolveCurrentStep($peserta, $pendaftaran);
@@ -26,7 +26,8 @@ class DashboardController extends Controller
         if (!$pendaftaran || !$pendaftaran->jalur_pendaftaran_id) return 4;
         if ($pendaftaran->dokumenPendaftarans()->count() === 0) return 5;
         if ($pendaftaran->status_pendaftaran === 'draft') return 6;
+        if ($pendaftaran->status_pendaftaran === 'diterima' && (!$pendaftaran->daftarUlang || $pendaftaran->daftarUlang->status !== 'sudah')) return 7;
 
-        return 7;
+        return 8;
     }
 }

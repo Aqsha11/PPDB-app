@@ -8,10 +8,22 @@ use Illuminate\Http\Request;
 
 class BiodataController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('peserta.view');
-        $data = Peserta::with('user')->latest()->paginate(20);
+        $query = Peserta::with('user');
+
+        $search = $request->input('search');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_lengkap', 'like', "%{$search}%")
+                    ->orWhere('nisn', 'like', "%{$search}%")
+                    ->orWhere('no_hp', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn($u) => $u->where('email', 'like', "%{$search}%"));
+            });
+        }
+
+        $data = $query->latest()->paginate(20)->withQueryString();
         return view('admin.biodata.index', compact('data'));
     }
 

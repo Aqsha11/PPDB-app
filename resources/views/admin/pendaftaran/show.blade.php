@@ -72,26 +72,39 @@
             </x-card>
 
             <x-card title="Orang Tua / Wali">
+                @php $ot = $pendaftaran->peserta->orangTua; @endphp
                 <dl class="space-y-4">
                     <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Nama Ayah</dt>
-                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->nama_ayah ?? '-' }}</dd>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->nama_ayah ?? '-' }}</dd>
+                    </div>
+                    <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">NIK Ayah</dt>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->nik_ayah ?? '-' }}</dd>
                     </div>
                     <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Pekerjaan Ayah</dt>
-                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->pekerjaan_ayah ?? '-' }}</dd>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->pekerjaan_ayah ?? '-' }}</dd>
                     </div>
                     <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Nama Ibu</dt>
-                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->nama_ibu ?? '-' }}</dd>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->nama_ibu ?? '-' }}</dd>
+                    </div>
+                    <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">NIK Ibu</dt>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->nik_ibu ?? '-' }}</dd>
                     </div>
                     <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Pekerjaan Ibu</dt>
-                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->pekerjaan_ibu ?? '-' }}</dd>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->pekerjaan_ibu ?? '-' }}</dd>
+                    </div>
+                    <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                        <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Penghasilan</dt>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->penghasilan ? 'Rp ' . number_format($ot->penghasilan, 0, ',', '.') : '-' }}</dd>
                     </div>
                     <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                         <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">No HP Orang Tua</dt>
-                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->no_hp_orang_tua ?? '-' }}</dd>
+                        <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $ot->no_hp ?? '-' }}</dd>
                     </div>
                 </dl>
             </x-card>
@@ -99,14 +112,23 @@
         </div>
 
         <x-card title="Sekolah Asal">
+            @php $sa = $pendaftaran->peserta->sekolahAsal; @endphp
             <dl class="space-y-4">
                 <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Nama Sekolah</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->sekolah_asal ?? '-' }}</dd>
+                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $sa->nama_sekolah ?? '-' }}</dd>
+                </div>
+                <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">NPSN</dt>
+                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $sa->npsn ?? '-' }}</dd>
                 </div>
                 <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
                     <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Alamat Sekolah</dt>
-                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $pendaftaran->peserta->alamat_sekolah ?? '-' }}</dd>
+                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $sa->alamat ?? '-' }}</dd>
+                </div>
+                <div class="flex flex-col sm:grid sm:grid-cols-3 sm:gap-4">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-slate-400">Tahun Lulus</dt>
+                    <dd class="mt-1 sm:mt-0 sm:col-span-2 text-sm text-gray-900 dark:text-white">{{ $sa->tahun_lulus ?? '-' }}</dd>
                 </div>
             </dl>
         </x-card>
@@ -199,20 +221,62 @@
             </x-card>
         @endif
 
-        @if(in_array($pendaftaran->status_pendaftaran, ['submitted', 'draft']))
-            <div class="flex items-center gap-3">
-                @if($pendaftaran->status_pendaftaran === 'draft')
-                    <form action="{{ route('admin.pendaftaran.destroy', $pendaftaran->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pendaftaran ini?')">
-                        @csrf @method('DELETE')
-                        <x-danger-button>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+        {{-- Aksi Verifikasi --}}
+        @if(in_array($pendaftaran->status_pendaftaran, ['draft', 'submitted']))
+            <x-card>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                        <div class="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-500/10 flex items-center justify-center shrink-0">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            Hapus
-                        </x-danger-button>
-                    </form>
-                @endif
-            </div>
+                        </div>
+                        <div>
+                            <p class="font-bold text-gray-900 dark:text-white">Verifikasi Pendaftaran</p>
+                            <p class="text-sm text-gray-500 dark:text-slate-400 mt-0.5">
+                                @if($pendaftaran->status_pendaftaran === 'draft')
+                                    Peserta belum mengirim pendaftaran. Anda bisa langsung verifikasi dari sini.
+                                @else
+                                    Periksa semua data dan dokumen, lalu putuskan verifikasi atau tolak.
+                                @endif
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        @if($pendaftaran->status_pendaftaran === 'draft')
+                            <form action="{{ route('admin.pendaftaran.destroy', $pendaftaran->id) }}" method="POST" onsubmit="return confirm('Hapus pendaftaran ini?')">
+                                @csrf @method('DELETE')
+                                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    Hapus
+                                </button>
+                            </form>
+                        @endif
+                        <form action="{{ route('admin.verifikasi.update', $pendaftaran->id) }}" method="POST" onsubmit="return confirm('Tolak pendaftaran ini? Semua dokumen akan ditolak.')">
+                            @csrf @method('PUT')
+                            <input type="hidden" name="status" value="ditolak">
+                            <input type="hidden" name="catatan" value="">
+                            <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/20 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                Tolak
+                            </button>
+                        </form>
+                        <form action="{{ route('admin.verifikasi.update', $pendaftaran->id) }}" method="POST" onsubmit="return confirm('Verifikasi pendaftaran ini?')">
+                            @csrf @method('PUT')
+                            <input type="hidden" name="status" value="terverifikasi">
+                            <input type="hidden" name="catatan" value="">
+                            <button type="submit" class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-lg shadow-emerald-500/25">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                Verifikasi
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </x-card>
+        @elseif($pendaftaran->status_pendaftaran === 'verifikasi')
+            <x-alert type="success" message="Pendaftaran ini sudah terverifikasi." />
+        @elseif($pendaftaran->status_pendaftaran === 'ditolak')
+            <x-alert type="danger" message="Pendaftaran ini ditolak." />
         @endif
 
     </div>

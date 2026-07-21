@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Notifications\CustomVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 
 
@@ -58,5 +59,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function pendaftarans()
     {
         return $this->hasMany(Pendaftaran::class);
+    }
+
+    public function sendEmailVerificationNotification()
+    {
+        $this->notify(new CustomVerifyEmail);
     }
 }

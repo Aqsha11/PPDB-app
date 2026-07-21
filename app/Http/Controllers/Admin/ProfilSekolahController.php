@@ -18,6 +18,24 @@ class ProfilSekolahController extends Controller
         return view('admin.profil.index', compact('data'));
     }
 
+    public function edit()
+    {
+        $this->authorize('cms.manage');
+
+        $data = ProfilSekolah::first();
+
+        return view('admin.profil.edit', compact('data'));
+    }
+
+    public function show()
+    {
+        $this->authorize('cms.manage');
+
+        $data = ProfilSekolah::first();
+
+        return view('admin.profil.show', compact('data'));
+    }
+
     public function update(Request $request)
     {
         $this->authorize('cms.manage');

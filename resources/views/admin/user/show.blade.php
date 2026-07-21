@@ -50,11 +50,46 @@
                     </div>
                     <div>
                         <x-input-label value="Status" />
-                        <div class="mt-1">
+                        <div class="mt-1 flex items-center gap-2">
                             @if($user->is_active ?? true)
                                 <x-badge color="green">Aktif</x-badge>
                             @else
                                 <x-badge color="red">Nonaktif</x-badge>
+                            @endif
+                            @if(auth()->user()->can('user.edit') && $user->id !== auth()->id())
+                                <form action="{{ route('admin.user.toggle-status', $user) }}" method="POST" class="inline">
+                                    @csrf @method('PUT')
+                                    <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                                        {{ ($user->is_active ?? true) ? 'Nonaktifkan' : 'Aktifkan' }}
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                    <div>
+                        <x-input-label value="Email Terverifikasi" />
+                        <div class="mt-1 flex items-center gap-2">
+                            @if($user->hasVerifiedEmail())
+                                <x-badge color="green">Terverifikasi</x-badge>
+                            @else
+                                <x-badge color="yellow">Belum Terverifikasi</x-badge>
+                            @endif
+                            @if(auth()->user()->can('user.edit'))
+                                @if(!$user->hasVerifiedEmail())
+                                    <form action="{{ route('admin.user.verify-email', $user) }}" method="POST" class="inline">
+                                        @csrf @method('PUT')
+                                        <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                                            Verifikasi sekarang
+                                        </button>
+                                    </form>
+                                    <span class="text-xs text-gray-400">|</span>
+                                    <form action="{{ route('admin.user.send-verification', $user) }}" method="POST" class="inline">
+                                        @csrf @method('POST')
+                                        <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 underline">
+                                            Kirim ulang email verifikasi
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
                         </div>
                     </div>

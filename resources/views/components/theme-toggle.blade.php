@@ -1,4 +1,4 @@
-<div class="relative hidden sm:block" @click.outside="open = false">
+<div class="relative" @click.outside="open = false">
     <button @click="open = !open" class="flex items-center justify-center w-9 h-9 text-gray-400 hover:text-yellow-500 dark:text-slate-400 dark:hover:text-yellow-400 transition-colors rounded-xl hover:bg-gray-100 dark:hover:bg-slate-700" aria-label="Toggle dark mode">
         <svg x-show="!isDark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />

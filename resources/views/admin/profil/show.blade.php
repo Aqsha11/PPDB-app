@@ -1,15 +1,17 @@
 <x-app-layout>
-    <x-slot name="header">Profil Sekolah</x-slot>
+    <x-slot name="header">Detail Profil Sekolah</x-slot>
 
     <div class="space-y-6">
         <x-breadcrumb :items="[
             ['label' => 'Dashboard', 'url' => route('admin.dashboard')],
-            ['label' => 'Profil Sekolah'],
+            ['label' => 'Profil Sekolah', 'url' => route('admin.profil.index')],
+            ['label' => 'Detail'],
         ]" />
 
-        <x-admin.module-header title="Profil Sekolah" description="Kelola informasi profil sekolah yang ditampilkan di halaman publik.">
+        <x-admin.module-header title="Detail Profil Sekolah" description="Lihat detail informasi profil sekolah.">
             <x-slot name="icon">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </x-slot>
             <x-slot name="actions">
                 <x-primary-button href="{{ route('admin.profil.edit') }}">
@@ -21,10 +23,10 @@
 
         <x-card>
             <x-slot name="title">Informasi Dasar</x-slot>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <x-input-label value="Nama Sekolah" />
-                    <p class="mt-1 text-sm text-gray-900">{{ $data->nama_sekolah ?? '-' }}</p>
+                    <p class="mt-1 text-sm text-gray-900 font-medium">{{ $data->nama_sekolah ?? '-' }}</p>
                 </div>
                 <div>
                     <x-input-label value="NPSN" />
@@ -57,7 +59,7 @@
                 @if($data->foto_sekolah ?? null)
                 <div>
                     <x-input-label value="Foto Sekolah" />
-                    <img src="{{ Storage::url($data->foto_sekolah) }}" alt="Foto Sekolah" class="mt-1 rounded-lg max-w-xs h-32 object-cover">
+                    <img src="{{ Storage::url($data->foto_sekolah) }}" alt="Foto Sekolah" class="mt-2 rounded-lg max-w-sm h-40 object-cover shadow">
                 </div>
                 @endif
             </div>
@@ -65,7 +67,7 @@
 
         <x-card>
             <x-slot name="title">Kontak</x-slot>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                     <x-input-label value="Telepon" />
                     <p class="mt-1 text-sm text-gray-900">{{ $data->telepon ?? '-' }}</p>
@@ -83,19 +85,37 @@
 
         <x-card>
             <x-slot name="title">Deskripsi & Visi Misi</x-slot>
-            <div class="space-y-5">
+            <div class="space-y-6">
                 <div>
                     <x-input-label value="Deskripsi Sekolah" />
                     <p class="mt-1 text-sm text-gray-900">{{ $data->deskripsi ?? '-' }}</p>
                 </div>
                 <div>
                     <x-input-label value="Visi" />
-                    <p class="mt-1 text-sm text-gray-900 whitespace-pre-line">{{ $data->visi ?? '-' }}</p>
+                    <div class="mt-1 text-sm text-gray-900 whitespace-pre-line bg-gray-50 rounded-lg p-4">{{ $data->visi ?? '-' }}</div>
                 </div>
                 <div>
                     <x-input-label value="Misi" />
-                    <p class="mt-1 text-sm text-gray-900 whitespace-pre-line">{{ $data->misi ?? '-' }}</p>
+                    <div class="mt-1 text-sm text-gray-900 whitespace-pre-line bg-gray-50 rounded-lg p-4">{{ $data->misi ?? '-' }}</div>
                 </div>
+                @if($data->warna_primary ?? null)
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <x-input-label value="Warna Primer" />
+                        <div class="mt-2 flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg shadow border" style="background-color: {{ $data->warna_primary }}"></div>
+                            <span class="text-sm text-gray-600 font-mono">{{ $data->warna_primary }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <x-input-label value="Warna Sekunder" />
+                        <div class="mt-2 flex items-center gap-2">
+                            <div class="w-8 h-8 rounded-lg shadow border" style="background-color: {{ $data->warna_second ?? '#ffffff' }}"></div>
+                            <span class="text-sm text-gray-600 font-mono">{{ $data->warna_second ?? '-' }}</span>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </x-card>
     </div>
